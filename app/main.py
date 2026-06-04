@@ -2,7 +2,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from app.db import pool
 from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
+from app.routers import category
 
 
 @asynccontextmanager
@@ -14,4 +14,4 @@ async def lifespan(app: FastAPI):
 app = FastAPI(name="Zlagoda", lifespan=lifespan)
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
-templates = Jinja2Templates(directory="app/templates")
+app.include_router(category.router)
