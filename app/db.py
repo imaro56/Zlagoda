@@ -1,6 +1,5 @@
-import os
 from psycopg_pool import ConnectionPool
+from app.config import settings
 
-DATABASE_URL = os.environ["DATABASE_URL"]
 
-pool = ConnectionPool(conninfo=DATABASE_URL, min_size=1, max_size=5, open=False)
+pool = ConnectionPool(conninfo=settings.database_url, min_size=1, max_size=5, open=False)

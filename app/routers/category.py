@@ -8,7 +8,7 @@ router = APIRouter(prefix="/categories", tags=["categories"])
 
 @router.get("/", response_class=HTMLResponse)
 def categories_page(request: Request, cur=Depends(get_db)):
-    cur.execute("SELECT * FROM categories")
+    cur.execute("SELECT * FROM category")
     categories = cur.fetchall()
     return templates.TemplateResponse(
         request=request,
