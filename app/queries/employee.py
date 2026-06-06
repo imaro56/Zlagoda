@@ -1,5 +1,3 @@
-
-
 def get_employee_by_login(cur , login):
     cur.execute(
         "SELECT * FROM employee WHERE login = %s", 

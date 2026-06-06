@@ -4,6 +4,7 @@ from app.db import pool
 from fastapi.staticfiles import StaticFiles
 from app.routers import category
 from starlette.middleware.sessions import SessionMiddleware
+from app.config import settings
 
 
 
