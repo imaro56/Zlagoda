@@ -26,7 +26,7 @@ def login(request: Request, login: str = Form(...), password: str = Form(...), c
               status_code=401,
           )
     request.session["employee_id"] = employee["id_employee"]
-    return RedirectResponse(url="/", status_code=303)
+    return RedirectResponse(url="/categories/", status_code=303)
 
 
 @router.get("/logout")
