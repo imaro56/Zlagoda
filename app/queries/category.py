@@ -1,6 +1,9 @@
 def get_category(cur, category_number):
     cur.execute(
-        "SELECT * FROM category WHERE category_number = %s",
+        """
+        SELECT * FROM category 
+        WHERE category_number = %s
+        """,
         (category_number,),
     )
     return cur.fetchone()
@@ -8,18 +11,43 @@ def get_category(cur, category_number):
 
 def get_all_categories(cur):
     cur.execute(
-        "SELECT * FROM category ORDER BY category_number"
+        """
+        SELECT * FROM category 
+        ORDER BY category_name
+        """
     )
     return cur.fetchall()
 
 def create_category(cur, data):
     cur.execute(
         """
-        INSERT INTO category (
-            category_number, category_name) 
-            VALUES (%s, %s) 
+        INSERT INTO category (category_name)
+            VALUES (%s) 
             RETURNING *
         """,
-        (data['category_number'], data['category_name']),
+        (data['category_name'],),
+    )
+    return cur.fetchone()
+
+def delete_category(cur, category_number):
+    cur.execute(
+        """
+        DELETE FROM category 
+        WHERE category_number = %s 
+        RETURNING *
+        """,
+        (category_number,),
+    )
+    return cur.fetchone()
+    
+def update_category(cur, category_number, data):
+    cur.execute(
+        """
+        UPDATE category
+        SET category_name = %s
+        WHERE category_number = %s
+        RETURNING *
+        """,
+        (data['category_name'], category_number),
     )
     return cur.fetchone()

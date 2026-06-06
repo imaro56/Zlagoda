@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Categories</h1>
+{% for category in categories %}
+    <p>{{ category.category_name }}</p>
+{% endfor %}
+{% if user.empl_role == 'manager' %}
+    <a href="/categories/new">New category</a>
+{% endif %}
+{% endblock %}
