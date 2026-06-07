@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Form, HTTPException, Request
+from fastapi import APIRouter, Depends, Form, HTTPException, Request, Response
 from fastapi.responses import HTMLResponse
 from starlette.responses import RedirectResponse
 
@@ -52,7 +52,7 @@ def edit_category(request: Request, user: ManagerOnly, category_number: int, cat
     return RedirectResponse(url="/categories", status_code=303)
 
 
-@router.post("/{category_number}/delete", response_class=RedirectResponse)
-def delete_category(request: Request, user: ManagerOnly, category_number: int, cur=Depends(get_db)):
+@router.delete("/{category_number}", response_class=Response)
+def delete_category(user: ManagerOnly, category_number: int, cur=Depends(get_db)):
     category.delete_category(cur, category_number)
-    return RedirectResponse(url="/categories", status_code=303)
+    return Response(status_code=200)
