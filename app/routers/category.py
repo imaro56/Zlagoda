@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, Form, HTTPException, Request, Response
 from fastapi.responses import HTMLResponse
 from starlette.responses import RedirectResponse
+from psycopg.errors import ForeignKeyViolation
 
 from app.dependencies import CurrentUser, ManagerOnly, get_current_user, get_db
 from app.queries import category
@@ -46,13 +47,26 @@ def edit_category_page(request: Request, user: ManagerOnly, category_number: int
     )
 
 
-@router.post("/{category_number}/edit", response_class=RedirectResponse)
-def edit_category(request: Request, user: ManagerOnly, category_number: int, category_name: str = Form(min_length=1, max_length=50), cur=Depends(get_db)):
-    category.update_category(cur, category_number, {"category_name": category_name})
-    return RedirectResponse(url="/categories", status_code=303)
+@router.put("/{category_number}", response_class=Response)
+def edit_category(user: ManagerOnly, category_number: int, category_name: str = Form(min_length=1, max_length=50), cur=Depends(get_db)):
+    updated = category.update_category(cur, category_number, {"category_name": category_name})
+    if updated is None:
+        raise HTTPException(status_code=404, detail="Category not found")
+    return Response(status_code=200, headers={"HX-Redirect": "/categories"})
 
 
 @router.delete("/{category_number}", response_class=Response)
-def delete_category(user: ManagerOnly, category_number: int, cur=Depends(get_db)):
-    category.delete_category(cur, category_number)
+def delete_category(request: Request, user: ManagerOnly, category_number: int, cur=Depends(get_db)):
+    try:
+        deleted = category.delete_category(cur, category_number)
+    except ForeignKeyViolation:
+        cur.connection.rollback()
+        return templates.TemplateResponse(
+            request=request,
+            name="_category_row.html",
+            context={"category": category.get_category(cur, category_number),
+                    "user": user, "error": "Cannot delete category with products"}
+        )
+    if deleted is None:
+        raise HTTPException(status_code=404, detail="Category not found")
     return Response(status_code=200)

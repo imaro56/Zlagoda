@@ -1,20 +1,7 @@
 {% extends "base.html" %} {% block content %}
 <h1>Categories</h1>
 {% for category in categories %}
-<p>
-    {{ category.category_name }} {% if user.empl_role == 'manager' %}
-    <a href="/categories/{{ category.category_number }}/edit">Edit</a>
-    <button
-        type="button"
-        hx-delete="/categories/{{ category.category_number }}"
-        hx-confirm="Are you sure you want to delete this category?"
-        hx-target="closest p"
-        hx-swap="outerHTML"
-    >
-        Delete
-    </button>
-    {% endif %}
-</p>
+{% include "_category_row.html" %}
 {% endfor %} {% if user.empl_role == 'manager' %}
 <a href="/categories/new">New category</a>
 {% endif %} {% endblock %}
