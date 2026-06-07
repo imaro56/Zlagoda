@@ -2,7 +2,14 @@
 {% block content %}
 <h1>Categories</h1>
 {% for category in categories %}
-    <p>{{ category.category_name }}</p>
+    <p> {{ category.category_name }} 
+        {% if user.empl_role == 'manager' %} 
+        <a href="/categories/{{ category.category_number }}/edit">Edit</a> 
+        <form method="post" action="/categories/{{ category.category_number }}/delete">
+            <button type="submit">Delete</button>
+        </form>
+        {% endif %}
+    </p>
 {% endfor %}
 {% if user.empl_role == 'manager' %}
     <a href="/categories/new">New category</a>
