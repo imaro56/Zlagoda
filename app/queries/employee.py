@@ -23,7 +23,7 @@ def get_all_employees(cur):
     cur.execute(
         """
         SELECT * FROM employee 
-        ORDER BY empl_name
+        ORDER BY empl_surname
         """
     )
     return cur.fetchall()
@@ -45,5 +45,25 @@ def create_employee(cur, data):
             data['empl_role'], data['salary'], data['date_of_birth'], 
             data['date_of_start'], data['phone_number'], data['city'], 
             data['street'], data['zip_code']),
+    )
+    return cur.fetchone()
+
+def update_employee(cur, id_employee, data):
+    cur.execute(
+        """
+        UPDATE employee
+        SET 
+            empl_surname = %s, empl_name = %s, empl_patronymic = %s, 
+            empl_role = %s, salary = %s, date_of_birth = %s, 
+            date_of_start = %s, phone_number = %s, city = %s, 
+            street = %s, zip_code = %s
+        WHERE id_employee = %s
+        RETURNING *
+        """,
+        (
+            data['empl_surname'], data['empl_name'], data['empl_patronymic'], 
+            data['empl_role'], data['salary'], data['date_of_birth'], 
+            data['date_of_start'], data['phone_number'], data['city'], 
+            data['street'], data['zip_code'], id_employee),
     )
     return cur.fetchone()

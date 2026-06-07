@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Depends, Form, HTTPException, Request, Response
 from fastapi.responses import HTMLResponse
-from starlette.responses import RedirectResponse
 from psycopg.errors import ForeignKeyViolation
 
 from app.dependencies import CurrentUser, ManagerOnly, get_current_user, get_db
@@ -29,10 +28,10 @@ def new_category_page(request: Request, user: ManagerOnly):
     )
 
 
-@router.post("/new", response_class=RedirectResponse)
-def create_category(request: Request, user: ManagerOnly, category_name: str = Form(min_length=1, max_length=50), cur=Depends(get_db)):
+@router.post("/", response_class=Response)
+def create_category(user: ManagerOnly, category_name: str = Form(min_length=1, max_length=50), cur=Depends(get_db)):
     category.create_category(cur, {"category_name": category_name})
-    return RedirectResponse(url="/categories", status_code=303)
+    return Response(status_code=200, headers={"HX-Redirect": "/categories"})
 
 
 @router.get("/{category_number}/edit", response_class=HTMLResponse)

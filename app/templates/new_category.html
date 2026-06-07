@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <h1>New category</h1>
-<form method="post" action="/categories/new">
+<form hx-post="/categories/">
     <input type="text" name="category_name" required minlength="1" maxlength="50">
     <button type="submit">Create</button>
 </form>
