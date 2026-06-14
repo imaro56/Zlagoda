@@ -14,7 +14,7 @@ def products_page(request: Request, user: CurrentUser, cur=Depends(get_db)):
     products = product.get_all_products(cur)
     return templates.TemplateResponse(
         request=request,
-        name="products.html",
+        name="product_list.html",
         context={"products": products, "user": user}
     )
 
@@ -23,7 +23,7 @@ def products_page(request: Request, user: CurrentUser, cur=Depends(get_db)):
 def new_product_page(request: Request, user: ManagerOnly, cur=Depends(get_db)):
     categories = category.get_all_categories(cur)
     return templates.TemplateResponse(
-        request=request, name="new_product.html",
+        request=request, name="product_new.html",
         context={"user": user, "categories": categories},
     )
 
@@ -50,7 +50,7 @@ def edit_product_page(request: Request, user: ManagerOnly, id_product: int, cur=
     categories = category.get_all_categories(cur)
     return templates.TemplateResponse(
         request=request,
-        name="edit_product.html",
+        name="product_edit.html",
         context={"product": product_data, "categories": categories, "user": user},
     )
 

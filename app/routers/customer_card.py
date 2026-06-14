@@ -14,7 +14,7 @@ def customer_cards_page(request: Request, user: CurrentUser, cur=Depends(get_db)
     customer_cards = customer_card.get_all_cards(cur)
     return templates.TemplateResponse(
         request=request,
-        name="customer_cards.html",
+        name="customer_card_list.html",
         context={"customer_cards": customer_cards, "user": user}
     )
 
@@ -23,7 +23,7 @@ def customer_cards_page(request: Request, user: CurrentUser, cur=Depends(get_db)
 def new_customer_card_page(request: Request, user: CurrentUser):
     return templates.TemplateResponse(
         request=request,
-        name="new_customer_card.html",
+        name="customer_card_new.html",
         context={"user": user}
     )
 
@@ -50,7 +50,7 @@ def edit_customer_card_page(request: Request, user: CurrentUser, card_number: st
         raise HTTPException(status_code=404, detail="Customer card not found")
     return templates.TemplateResponse(
         request=request,
-        name="edit_customer_card.html",
+        name="customer_card_edit.html",
         context={"customer_card": customer_card_data, "user": user}
     )
 

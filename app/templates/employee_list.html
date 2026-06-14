@@ -1,0 +1,7 @@
+{% extends "base.html" %} {% block content %}
+<h1>Employees</h1>
+{% for employee in employees %}
+{% include "_employee_row.html" %}
+{% endfor %}
+<a href="/employees/new">New employee</a>
+{% endblock %}

@@ -14,7 +14,7 @@ def categories_page(request: Request, user: CurrentUser, cur=Depends(get_db)):
     categories = category.get_all_categories(cur)
     return templates.TemplateResponse(
         request=request,
-        name="categories.html",
+        name="category_list.html",
         context={"categories": categories, "user": user}
     )
 
@@ -23,7 +23,7 @@ def categories_page(request: Request, user: CurrentUser, cur=Depends(get_db)):
 def new_category_page(request: Request, user: ManagerOnly):
     return templates.TemplateResponse(
         request=request,
-        name="new_category.html",
+        name="category_new.html",
         context={"user": user}
     )
 
@@ -41,7 +41,7 @@ def edit_category_page(request: Request, user: ManagerOnly, category_number: int
         raise HTTPException(status_code=404, detail="Category not found")
     return templates.TemplateResponse(
         request=request,
-        name="edit_category.html",
+        name="category_edit.html",
         context={"category": category_data, "user": user}
     )
 

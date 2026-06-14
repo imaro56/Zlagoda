@@ -18,7 +18,7 @@ def employees_page(request: Request, user: ManagerOnly, cur=Depends(get_db)):
     employees = employee.get_all_employees(cur)
     return templates.TemplateResponse(
         request=request,
-        name="employees.html",
+        name="employee_list.html",
         context={"employees": employees, "user": user},
     )
 
@@ -27,7 +27,7 @@ def employees_page(request: Request, user: ManagerOnly, cur=Depends(get_db)):
 def new_employee_page(request: Request, user: ManagerOnly):
     return templates.TemplateResponse(
         request=request,
-        name="new_employee.html",
+        name="employee_new.html",
         context={"user": user},
     )
 
@@ -47,7 +47,7 @@ def employee_me_page(request: Request, user: CurrentUser, cur=Depends(get_db)):
         raise HTTPException(status_code=404, detail="Employee not found")
     return templates.TemplateResponse(
         request=request,
-        name="employee.html",
+        name="employee_detail.html",
         context={"employee": employee_data, "user": user},
     )
 
@@ -59,7 +59,7 @@ def edit_employee_page(request: Request, user: ManagerOnly, id_employee: str, cu
         raise HTTPException(status_code=404, detail="Employee not found")
     return templates.TemplateResponse(
         request=request,
-        name="edit_employee.html",
+        name="employee_edit.html",
         context={"employee": employee_data, "user": user},
     )
 
@@ -80,7 +80,7 @@ def employee_page(request: Request, user: ManagerOnly, id_employee: str, cur=Dep
         raise HTTPException(status_code=404, detail="Employee not found")
     return templates.TemplateResponse(
         request=request,
-        name="employee.html",
+        name="employee_detail.html",
         context={"employee": employee_data, "user": user},
     )
 
