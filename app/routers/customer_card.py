@@ -6,6 +6,9 @@ from app.dependencies import CurrentUser, ManagerOnly, get_current_user, get_db
 from app.queries import customer_card
 from app.templating import templates
 
+from typing import Annotated
+from app.schemas.customer_card import CustomerCardCreate, CustomerCardUpdate
+
 router = APIRouter(prefix="/customer_cards", tags=["customer_cards"], dependencies=[Depends(get_current_user)])
 
 
@@ -29,17 +32,8 @@ def new_customer_card_page(request: Request, user: CurrentUser):
 
 
 @router.post("/", response_class=Response)
-def create_customer_card(user: CurrentUser, card_number: str = Form(min_length=1, max_length=13),
-            cust_surname:str = Form(min_length=1, max_length=50),
-            cust_name: str = Form(min_length=1, max_length=50),
-            cust_patronymic: str = Form(default="", max_length=50),
-            phone_number: str = Form(min_length=1, max_length=13),
-            city: str = Form(default="", max_length=50),
-            street: str = Form(default="", max_length=50),
-            zip_code: str = Form(default="", max_length=9),
-            percent: int = Form(ge=0),
-            cur = Depends(get_db),):
-    customer_card.create_card(cur, {"card_number": card_number, "cust_surname": cust_surname, "cust_name": cust_name, "cust_patronymic": cust_patronymic, "phone_number": phone_number, "city": city, "street": street, "zip_code": zip_code, "percent": percent,})
+def create_customer_card(user: CurrentUser, form: Annotated[CustomerCardCreate, Form()], cur=Depends(get_db)):
+    customer_card.create_card(cur, form.model_dump())
     return Response(status_code=200, headers={"HX-Redirect": "/customer_cards"})
 
 
@@ -56,21 +50,8 @@ def edit_customer_card_page(request: Request, user: CurrentUser, card_number: st
 
 
 @router.put("/{card_number}", response_class=Response)
-def edit_customer_card(user: CurrentUser, card_number: str,
-            cust_surname: str = Form(min_length=1, max_length=50),
-            cust_name: str = Form(min_length=1, max_length=50),
-            cust_patronymic: str = Form(default="", max_length=50),
-            phone_number: str = Form(min_length=1, max_length=13),
-            city: str = Form(default="", max_length=50),
-            street: str = Form(default="", max_length=50),
-            zip_code: str = Form(default="", max_length=9),
-            percent: int = Form(ge=0),
-            cur=Depends(get_db)):
-    updated = customer_card.update_card(cur, card_number, {
-        "cust_surname": cust_surname, "cust_name": cust_name, "cust_patronymic": cust_patronymic,
-        "phone_number": phone_number, "city": city, "street": street,
-        "zip_code": zip_code, "percent": percent,
-    })
+def edit_customer_card(user: CurrentUser, card_number: str, form: Annotated[CustomerCardUpdate, Form()], cur=Depends(get_db)):
+    updated = customer_card.update_card(cur, card_number, form.model_dump())
     if updated is None:
         raise HTTPException(status_code=404, detail="Customer card not found")
     return Response(status_code=200, headers={"HX-Redirect": "/customer_cards"})
