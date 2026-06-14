@@ -6,6 +6,10 @@ from starlette.requests import Request
 from typing import Annotated
 
 
+def get_conn():
+    with pool.connection() as conn:
+        yield conn
+
 def get_db():
     with pool.connection() as conn:
         with conn.cursor(row_factory=dict_row) as cur:
