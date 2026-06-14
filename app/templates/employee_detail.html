@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+  {% block content %}
+  <h1>{{ employee.empl_surname }} {{ employee.empl_name }} {{ employee.empl_patronymic}}</h1>
+  <dl>
+      <dt>ID</dt><dd>{{ employee.id_employee }}</dd>
+      <dt>Surname</dt><dd>{{ employee.empl_surname }}</dd>
+      <dt>Name</dt><dd>{{ employee.empl_name }}</dd>
+      <dt>Patronymic</dt><dd>{{ employee.empl_patronymic }}</dd>
+      <dt>Role</dt><dd>{{ employee.empl_role }}</dd>
+      <dt>Salary</dt><dd>{{ employee.salary }}</dd>
+      <dt>Date of birth</dt><dd>{{ employee.date_of_birth }}</dd>
+      <dt>Date of start</dt><dd>{{ employee.date_of_start }}</dd>
+      <dt>Phone</dt><dd>{{ employee.phone_number }}</dd>
+      <dt>City</dt><dd>{{ employee.city }}</dd>
+      <dt>Street</dt><dd>{{ employee.street }}</dd>
+      <dt>Zip</dt><dd>{{ employee.zip_code }}</dd>
+      <dt>Login</dt><dd>{{ employee.login }}</dd>
+  </dl>
+  {% if user.empl_role == 'manager' %}
+  <a href="/employees/{{ employee.id_employee }}/edit">Edit</a>
+  <div id="employee-error" style="color:red;"></div>
+  <button hx-delete="/employees/{{ employee.id_employee }}"
+    hx-confirm="Delete this employee?"
+    hx-target="#employee-error" hx-swap="innerHTML">Delete</button>
+  {% endif %}
+  <a href="/employees">Back to list</a>
+  {% endblock %}

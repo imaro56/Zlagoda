@@ -2,16 +2,16 @@
     {{ employee.empl_name }} 
     <a href="/employees/{{ employee.id_employee }}">Details</a>
     <a href="/employees/{{ employee.id_employee }}/edit">Edit</a>
+    {% if employee.id_employee != user.id_employee %}
     <button
         type="button"
         hx-delete="/employees/{{ employee.id_employee }}"
         hx-confirm="Are you sure you want to delete this employee?"
-        hx-target="closest p"
-        hx-swap="outerHTML"
+        hx-target="#err-{{ employee.id_employee }}"
+        hx-swap="innerHTML"
     >
         Delete
     </button>
-    {% if error %}
-    <span style="color: red;">{{ error }}</span>
     {% endif %}
+    <span class="error" id="err-{{ employee.id_employee }}"></span>
 </p>

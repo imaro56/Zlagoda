@@ -86,17 +86,14 @@ def employee_page(request: Request, user: ManagerOnly, id_employee: str, cur=Dep
 
 
 @router.delete("/{id_employee}")
-def delete_employee(request: Request, user: ManagerOnly, id_employee: str, cur=Depends(get_db)):
+def delete_employee(user: ManagerOnly, id_employee: str, cur=Depends(get_db)):
+    if id_employee == user["id_employee"]:
+          return HTMLResponse('<span class="error">You cannot delete your own account</span>')
     try: 
         deleted = employee.delete_employee(cur, id_employee)
     except ForeignKeyViolation:
         cur.connection.rollback()
-        return templates.TemplateResponse(
-            request=request,
-            name="_employee_row.html",
-            context={"employee": employee.get_employee(cur, id_employee),
-                    "user": user, "error": "Cannot delete employee with receipts"}
-        )
+        return HTMLResponse('<span class="error">Cannot delete employee with checks</span>')
     if deleted is None:
         raise HTTPException(status_code=404, detail="Employee not found")
     return Response(status_code=200, headers={"HX-Redirect": "/employees"})

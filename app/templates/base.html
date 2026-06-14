@@ -3,6 +3,7 @@
 <head>
     <title>{% block title %}{% endblock %}</title>
     <script src="/static/htmx.min.js" defer></script>
+    <meta name="htmx-config" content='{"responseHandling":[{"code":"422","swap":true},{"code":"[23]..","swap":true},{"code":"204","swap":false},{"code":"[45]..","swap":false,"error":true},{"code":"...","swap":false}]}'>
 </head>
 <body>
     <nav>
