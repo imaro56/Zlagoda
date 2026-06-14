@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}My checks{% endblock %}
+{% block content %}
+<h1>My checks</h1>
+
+<form class="toolbar" method="get" action="/checks/mine">
+    <label>From <input type="date" name="date_from" value="{{ date_from }}"></label>
+    <label>To <input type="date" name="date_to" value="{{ date_to }}"></label>
+    <button type="submit">Show</button>
+</form>
+
+<table class="data-table">
+    <thead>
+        <tr>
+            <th>Check №</th>
+            <th>Date</th>
+            <th>Card</th>
+            <th>Total</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for check in checks %}
+        <tr>
+            <td>{{ check.check_number }}</td>
+            <td>{{ check.print_date.strftime("%Y-%m-%d %H:%M") }}</td>
+            <td>{{ check.card_number or "—" }}</td>
+            <td>{{ "%.2f"|format(check.sum_total) }}</td>
+            <td><a href="/checks/{{ check.check_number }}">Details</a></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5">No checks for this period.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<p class="check-totals"><strong>Total for period: {{ "%.2f"|format(total) }}</strong></p>
+{% endblock %}

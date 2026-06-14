@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Check {{ check.check_number }}{% endblock %}
+{% block content %}
+<h1>Check №{{ check.check_number }}</h1>
+
+<dl class="check-header">
+    <dt>Date</dt>
+    <dd>{{ check.print_date.strftime("%Y-%m-%d %H:%M") }}</dd>
+    <dt>Cashier</dt>
+    <dd>{{ check.empl_surname }} {{ check.empl_name }} ({{ check.id_employee }})</dd>
+    <dt>Customer card</dt>
+    <dd>{% if check.card_number %}{{ check.card_number }} — {{ check.cust_surname }}{% else %}—{% endif %}</dd>
+</dl>
+
+<table class="data-table">
+    <thead>
+        <tr>
+            <th>UPC</th>
+            <th>Product</th>
+            <th>Qty</th>
+            <th>Price</th>
+            <th>Sum</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in check.items %}
+        <tr>
+            <td>{{ item.UPC }}</td>
+            <td>{{ item.product_name }}</td>
+            <td>{{ item.product_number }}</td>
+            <td>{{ "%.2f"|format(item.selling_price) }}</td>
+            <td>{{ "%.2f"|format(item.line_total) }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5">No items.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<p class="check-totals">
+    VAT: {{ "%.2f"|format(check.vat) }}<br>
+    <strong>Total: {{ "%.2f"|format(check.sum_total) }}</strong>
+</p>
+
+<a href="/checks/mine">← Back to my checks</a>
+{% endblock %}
