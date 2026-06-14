@@ -67,3 +67,36 @@ def update_employee(cur, id_employee, data):
             data['street'], data['zip_code'], id_employee),
     )
     return cur.fetchone()
+
+
+def delete_employee(cur, id_employee):
+    cur.execute(
+        """
+        DELETE FROM employee
+        WHERE id_employee = %s
+        RETURNING *
+        """,
+        (id_employee,),
+    )
+    return cur.fetchone()
+
+def get_employee_by_surname(cur, surname):
+    cur.execute(
+        """
+        SELECT * FROM employee
+        WHERE empl_surname ILIKE %s
+        ORDER BY empl_surname
+        """,
+        (f"%{surname}%",),
+    )
+    return cur.fetchall()
+
+def get_all_cashiers(cur):
+    cur.execute(
+        """
+        SELECT * FROM employee
+        WHERE empl_role = 'cashier'
+        ORDER BY empl_surname
+        """,
+    )
+    return cur.fetchall()

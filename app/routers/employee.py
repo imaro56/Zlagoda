@@ -39,6 +39,7 @@ def create_employee(user: ManagerOnly, form: Annotated[EmployeeCreate, Form()], 
     employee.create_employee(cur, data)
     return Response(status_code=200, headers={"HX-Redirect": "/employees"})
 
+
 @router.get("/me", response_class=HTMLResponse)
 def employee_me_page(request: Request, user: CurrentUser, cur=Depends(get_db)):
     employee_data = employee.get_employee(cur, user["id_employee"])
@@ -50,9 +51,10 @@ def employee_me_page(request: Request, user: CurrentUser, cur=Depends(get_db)):
         context={"employee": employee_data, "user": user},
     )
 
-@router.get("/{employee_id}/edit", response_class=HTMLResponse)
-def edit_employee_page(request: Request, user: ManagerOnly, employee_id: str, cur=Depends(get_db)):
-    employee_data = employee.get_employee(cur, employee_id)
+
+@router.get("/{id_employee}/edit", response_class=HTMLResponse)
+def edit_employee_page(request: Request, user: ManagerOnly, id_employee: str, cur=Depends(get_db)):
+    employee_data = employee.get_employee(cur, id_employee)
     if employee_data is None:
         raise HTTPException(status_code=404, detail="Employee not found")
     return templates.TemplateResponse(
@@ -61,18 +63,19 @@ def edit_employee_page(request: Request, user: ManagerOnly, employee_id: str, cu
         context={"employee": employee_data, "user": user},
     )
 
-@router.put("/{employee_id}", response_class=HTMLResponse)
-def edit_employee(user: ManagerOnly, employee_id: str, form: Annotated[EmployeeUpdate, Form()], cur=Depends(get_db)):
+
+@router.put("/{id_employee}", response_class=HTMLResponse)
+def edit_employee(user: ManagerOnly, id_employee: str, form: Annotated[EmployeeUpdate, Form()], cur=Depends(get_db)):
     data = form.model_dump()
-    updated = employee.update_employee(cur, employee_id, data)
+    updated = employee.update_employee(cur, id_employee, data)
     if updated is None:
         raise HTTPException(status_code=404, detail="Employee not found")
-    return Response(status_code=200, headers={"HX-Redirect": f"/employees/{employee_id}"})
+    return Response(status_code=200, headers={"HX-Redirect": f"/employees/{id_employee}"})
 
 
-@router.get("/{employee_id}", response_class=HTMLResponse)
-def employee_page(request: Request, user: ManagerOnly, employee_id: str, cur=Depends(get_db)):
-    employee_data = employee.get_employee(cur, employee_id)
+@router.get("/{id_employee}", response_class=HTMLResponse)
+def employee_page(request: Request, user: ManagerOnly, id_employee: str, cur=Depends(get_db)):
+    employee_data = employee.get_employee(cur, id_employee)
     if employee_data is None:
         raise HTTPException(status_code=404, detail="Employee not found")
     return templates.TemplateResponse(
@@ -81,3 +84,19 @@ def employee_page(request: Request, user: ManagerOnly, employee_id: str, cur=Dep
         context={"employee": employee_data, "user": user},
     )
 
+
+@router.delete("/{id_employee}")
+def delete_employee(request: Request, user: ManagerOnly, id_employee: str, cur=Depends(get_db)):
+    try: 
+        deleted = employee.delete_employee(cur, id_employee)
+    except ForeignKeyViolation:
+        cur.connection.rollback()
+        return templates.TemplateResponse(
+            request=request,
+            name="_employee_row.html",
+            context={"employee": employee.get_employee(cur, id_employee),
+                    "user": user, "error": "Cannot delete employee with receipts"}
+        )
+    if deleted is None:
+        raise HTTPException(status_code=404, detail="Employee not found")
+    return Response(status_code=200, headers={"HX-Redirect": "/employees"})

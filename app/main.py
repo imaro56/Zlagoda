@@ -23,7 +23,7 @@ app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 app.include_router(auth.router)
 app.include_router(category.router)
-#app.include_router(employee.router)
+app.include_router(employee.router)
 
 @app.exception_handler(RequiresAuth)
 def requires_auth_handler(request: Request, exc: RequiresAuth):
