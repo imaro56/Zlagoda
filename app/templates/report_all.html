@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Receipts report{% endblock %}
+{% block content %}
+<h1>All receipts for a period</h1>
+
+<form class="toolbar" method="get" action="/checks/reports/all">
+    <label>From <input type="date" name="date_from" value="{{ date_from or '' }}"></label>
+    <label>To <input type="date" name="date_to" value="{{ date_to or '' }}"></label>
+    <button type="submit">Show</button>
+</form>
+
+{% if checks is not none %}
+    {% for check in checks %}
+    <div class="report-check">
+        <h3>№{{ check.check_number }} · {{ check.print_date.strftime("%Y-%m-%d %H:%M") }} · {{ "%.2f"|format(check.sum_total) }}</h3>
+        <table class="data-table">
+            <thead><tr><th>Product</th><th>Qty</th><th>Price</th><th>Sum</th></tr></thead>
+            <tbody>
+                {% for item in check.items %}
+                <tr>
+                    <td>{{ item.product_name }}</td>
+                    <td>{{ item.product_number }}</td>
+                    <td>{{ "%.2f"|format(item.selling_price) }}</td>
+                    <td>{{ "%.2f"|format(item.line_total) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p>No receipts for this period.</p>
+    {% endfor %}
+    <p class="check-totals"><strong>Grand total: {{ "%.2f"|format(total) }}</strong></p>
+{% endif %}
+{% endblock %}
