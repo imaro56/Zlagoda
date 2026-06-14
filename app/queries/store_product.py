@@ -86,3 +86,45 @@ def get_non_promotional_store_products(cur, sort="quantity"):
         ORDER BY {order_by}
         """)
     return cur.fetchall()
+
+def reprice_store_product(cur, id_product, new_price):
+    cur.execute(
+        """
+        UPDATE store_product
+        SET selling_price = CASE
+            WHEN promotional_product = TRUE THEN %s * 0.8
+            ELSE %s
+        END
+        WHERE id_product = %s
+        RETURNING *
+        """,
+        (new_price, new_price, id_product))
+    return cur.fetchall()
+
+
+def create_promotional_store_product(cur, upc, upc_prom, products_number):
+    cur.execute(  # insert a promotional product based on the non-promotional product
+        # select chooses the non-prom product without promotional product connected
+        """
+        INSERT INTO store_product (UPC, UPC_prom, id_product, selling_price, products_number, promotional_product)
+        SELECT %s, NULL, sp.id_product, sp.selling_price * 0.8, %s, TRUE  
+        FROM store_product as sp
+        WHERE sp.UPC = %s
+            AND sp.promotional_product = FALSE
+            AND NOT EXISTS (  
+                SELECT 1 FROM store_product 
+                WHERE id_product = sp.id_product AND promotional_product = TRUE
+            )
+        RETURNING *
+        """,
+        (upc_prom, products_number, upc))
+    promo = cur.fetchone()
+    if promo:
+        cur.execute(  # update UPC_prom for the promotional product
+            """
+            UPDATE store_product
+            SET UPC_prom = %s
+            WHERE UPC = %s
+            """,
+            (upc_prom, upc))
+    return promo
