@@ -8,11 +8,13 @@ def get_store_product(cur, upc):
     return cur.fetchone()
 
 
-def get_all_store_products(cur):
+def get_all_store_products(cur, sort="quantity"):
+    order_by = {"quantity": "products_number DESC", "name": "product_name ASC"}[sort]
     cur.execute(
-        """
+        f"""
         SELECT * FROM store_product
-        ORDER BY products_number DESC
+        JOIN product USING (id_product)
+        ORDER BY {order_by}
         """)
     return cur.fetchall()
 
@@ -62,21 +64,25 @@ def get_store_product_full(cur, upc):
     return cur.fetchone()
 
 
-def get_promotional_store_products(cur):
+def get_promotional_store_products(cur, sort="quantity"):
+    order_by = {"quantity": "products_number DESC", "name": "product_name ASC"}[sort]
     cur.execute(
-        """
+        f"""
         SELECT * FROM store_product
+        JOIN product USING (id_product)
         WHERE promotional_product = TRUE
-        ORDER BY products_number DESC
+        ORDER BY {order_by}
         """)
     return cur.fetchall()
 
 
-def get_non_promotional_store_products(cur):
+def get_non_promotional_store_products(cur, sort="quantity"):
+    order_by = {"quantity": "products_number DESC", "name": "product_name ASC"}[sort]
     cur.execute(
-        """
+        f"""
         SELECT * FROM store_product
+        JOIN product USING (id_product)
         WHERE promotional_product = FALSE
-        ORDER BY products_number DESC
+        ORDER BY {order_by}
         """)
     return cur.fetchall()
