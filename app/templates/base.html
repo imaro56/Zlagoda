@@ -1,14 +1,39 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>{% block title %}{% endblock %}</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Zlagoda{% endblock %}</title>
+    <link rel="stylesheet" href="/static/pico.min.css">
+    <link rel="stylesheet" href="/static/styles.css">
     <script src="/static/htmx.min.js" defer></script>
     <meta name="htmx-config" content='{"responseHandling":[{"code":"422","swap":true},{"code":"[23]..","swap":true},{"code":"204","swap":false},{"code":"[45]..","swap":false,"error":true},{"code":"...","swap":false}]}'>
 </head>
 <body>
-    <nav>
+    <nav class="container-fluid">
+        <ul>
+            <li><strong>Zlagoda</strong></li>
+        </ul>
+        {% if user %}
+        <ul>
+            {% if user.empl_role == 'cashier' %}
+            <li><a href="/checks/new">New sale</a></li>
+            <li><a href="/checks/mine">My checks</a></li>
+            {% endif %}
+            {% if user.empl_role == 'manager' %}
+            <li><a href="/employees/">Employees</a></li>
+            <li><a href="/categories/">Categories</a></li>
+            <li><a href="/checks/reports/all">Reports</a></li>
+            {% endif %}
+            <li><a href="/products/">Products</a></li>
+            <li><a href="/store_products/">Store products</a></li>
+            <li><a href="/customer_cards/">Customers</a></li>
+            <li><span>{{ user.empl_name }} ({{ user.empl_role }})</span></li>
+            <li><a href="/logout">Logout</a></li>
+        </ul>
+        {% endif %}
     </nav>
-    <main>
+    <main class="container">
         {% block content %}{% endblock %}
     </main>
 </body>
