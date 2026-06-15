@@ -1,11 +1,12 @@
 from datetime import date
 
 from fastapi import APIRouter, Depends, HTTPException, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 
-from app.dependencies import CurrentUser, ManagerOnly, CashierOnly, get_current_user, get_db
+from app.dependencies import CurrentUser, ManagerOnly, CashierOnly, get_current_user, get_db, get_conn
 from app.queries import check, employee, product
 from app.templating import templates
+from app.schemas.check import CheckCreate
 
 router = APIRouter(prefix="/checks", tags=["checks"], dependencies=[Depends(get_current_user)])
 
@@ -82,3 +83,9 @@ def check_detail_page(request: Request, user: CurrentUser, check_number: str, cu
         name="check_detail.html",
         context={"check": check_data, "user": user},
     )
+
+
+@router.post("/", response_class=RedirectResponse)
+def create_check(user: CashierOnly, check_data: CheckCreate, conn=Depends(get_conn)):
+    check_number = check.create_check(conn, user["id_employee"], check_data)
+    return RedirectResponse(url=f"/checks/{check_number}", status_code=303)
