@@ -63,6 +63,8 @@ CREATE TABLE customer_card (
     percent INT NOT NULL CHECK (percent >= 0)
 );
 
+CREATE SEQUENCE check_number_sequence;
+
 CREATE TABLE "check" (
     check_number VARCHAR(10) PRIMARY KEY,
     id_employee VARCHAR(10) NOT NULL REFERENCES employee(id_employee) ON UPDATE CASCADE ON DELETE NO ACTION,

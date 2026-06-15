@@ -1,3 +1,7 @@
+from decimal import Decimal
+from fastapi import HTTPException
+from psycopg.rows import dict_row
+
 def get_check_with_items(cur, check_number):
     cur.execute(
         """
@@ -113,3 +117,73 @@ def product_qty_sold(cur, id_product, date_from, date_to):
         (id_product, date_from, date_to),
     )
     return cur.fetchone()["qty"]
+
+
+def create_check(conn, id_employee, data):
+    with conn.transaction():
+        with conn.cursor(row_factory=dict_row) as cur:
+            cur.execute("SELECT nextval('check_number_sequence')")
+            check_number = str(cur.fetchone()["nextval"]).zfill(10) # zfill for 1 -> 0000000001
+
+            # calculating total sum and save rows
+            sum_total = Decimal(0)
+            sale_rows = []
+            for sale_row in data.sales:
+                cur.execute( # validating and locking store product
+                    """
+                    SELECT selling_price, products_number
+                    FROM store_product
+                    WHERE UPC = %s
+                    FOR UPDATE
+                    """,
+                    (sale_row.UPC,),
+                )
+                store_product = cur.fetchone()
+                if store_product is None:
+                    raise HTTPException(404, f"Store product {sale_row.UPC} not found")
+                if store_product["products_number"] < sale_row.product_number:
+                    raise HTTPException(409, f"Not enough product {sale_row.UPC}")
+
+                sum_total += store_product["selling_price"] * sale_row.product_number
+                sale_rows.append((sale_row.UPC, sale_row.product_number, store_product["selling_price"]))
+
+            # customer card discount
+            if data.card_number:
+                cur.execute(
+                    "SELECT percent FROM customer_card WHERE card_number = %s",
+                    (data.card_number,),
+                )
+                customer_card = cur.fetchone()
+                if customer_card is None:
+                    raise HTTPException(404, "Client card not found")
+                sum_total = sum_total * (100 - customer_card["percent"]) / 100
+
+            vat = sum_total * Decimal("0.2")
+
+            cur.execute( # creating check
+                """
+                INSERT INTO "check"
+                    (check_number, id_employee, card_number, print_date, sum_total, vat)
+                VALUES (%s, %s, %s, NOW(), %s, %s)
+                """,
+                (check_number, id_employee, data.card_number, sum_total, vat),
+            )
+
+            for upc, product_number, selling_price in sale_rows:
+                cur.execute( # creating sale
+                    """
+                    INSERT INTO sale (UPC, check_number, product_number, selling_price)
+                    VALUES (%s, %s, %s, %s)
+                    """,
+                    (upc, check_number, product_number, selling_price),
+                )
+                cur.execute( # updating store_product number
+                    """
+                    UPDATE store_product
+                    SET products_number = products_number - %s
+                    WHERE UPC = %s
+                    """,
+                    (product_number, upc),
+                )
+
+    return check_number
