@@ -187,3 +187,15 @@ def create_check(conn, id_employee, data):
                 )
 
     return check_number
+
+
+def delete_check(cur, check_number):
+    cur.execute(
+        """
+        DELETE FROM "check"
+        WHERE check_number = %s
+        RETURNING *
+        """,
+        (check_number,),
+    )
+    return cur.fetchone()

@@ -23,7 +23,7 @@
         </tr>
     </thead>
     <tbody>
-        {% for item in check.items %}
+        {% for item in check["items"] %}
         <tr>
             <td>{{ item.upc }}</td>
             <td>{{ item.product_name }}</td>
@@ -41,6 +41,12 @@
     VAT: {{ "%.2f"|format(check.vat) }}<br>
     <strong>Total: {{ "%.2f"|format(check.sum_total) }}</strong>
 </p>
-
+{% if user.empl_role == "manager" %}
+<button hx-delete="/checks/{{ check.check_number }}"
+        hx-confirm="Delete this check?"
+        hx-on::after-request="window.location='/checks/reports/all'">
+Delete
+</button>
+{% endif %}
 <a href="/checks/mine">← Back to my checks</a>
 {% endblock %}

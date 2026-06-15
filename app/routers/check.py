@@ -31,10 +31,13 @@ def my_checks_page(request: Request, user: CurrentUser,
 @router.get("/reports/all", response_class=HTMLResponse)
 def report_all(request: Request, user: ManagerOnly,
         date_from: date | None = None, date_to: date | None = None, cur=Depends(get_db)):
-    checks = total = None
-    if date_from and date_to:
-        checks = check.get_all_checks(cur, date_from, date_to)
-        total = check.sum_checks_all(cur, date_from, date_to)
+    today = date.today()
+    if date_from is None:
+        date_from = today
+    if date_to is None:
+        date_to = today
+    checks = check.get_all_checks(cur, date_from, date_to)
+    total = check.sum_checks_all(cur, date_from, date_to)
     return templates.TemplateResponse(
         request=request,
         name="report_all.html",
@@ -100,3 +103,11 @@ def create_check(user: CashierOnly, upc: list[str] = Form([]), product_number: l
     data = CheckCreate(sales=[SaleCreate(UPC=u, product_number=n) for u, n in zip(upc, product_number) if n > 0], card_number=card_number or None)
     check_number = check.create_check(conn, user["id_employee"], data)
     return Response(status_code=200, headers={"HX-Redirect": f"/checks/{check_number}"})
+
+
+@router.delete("/{check_number}", response_class=Response)
+def delete_check(user: ManagerOnly, check_number: str, cur=Depends(get_db)):
+    deleted = check.delete_check(cur, check_number)
+    if deleted is None:
+        raise HTTPException(status_code=404, detail="Check not found")
+    return Response(status_code=200)

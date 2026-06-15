@@ -21,5 +21,7 @@
 
 {% if qty is not none %}
 <p class="check-totals"><strong>Sold: {{ qty }} units</strong></p>
+{% else %}
+<p>Select a product and date range to see how many were sold.</p>
 {% endif %}
 {% endblock %}

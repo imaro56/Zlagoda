@@ -16,7 +16,7 @@
         <table class="data-table">
             <thead><tr><th>Product</th><th>Qty</th><th>Price</th><th>Sum</th></tr></thead>
             <tbody>
-                {% for item in check.items %}
+                {% for item in check["items"] %}
                 <tr>
                     <td>{{ item.product_name }}</td>
                     <td>{{ item.product_number }}</td>
@@ -26,10 +26,19 @@
                 {% endfor %}
             </tbody>
         </table>
+    {% if user.empl_role == "manager" %}
+    <button hx-delete="/checks/{{ check.check_number }}"
+            hx-confirm="Delete this check?"
+            hx-on::after-request="window.location='/checks/reports/all'">
+    Delete
+    </button>
+    {% endif %}
     </div>
     {% else %}
     <p>No receipts for this period.</p>
     {% endfor %}
     <p class="check-totals"><strong>Grand total: {{ "%.2f"|format(total) }}</strong></p>
+{% else %}
+    <p>Select a date range and click Show to view receipts.</p>
 {% endif %}
 {% endblock %}

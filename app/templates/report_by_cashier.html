@@ -26,7 +26,7 @@
         <table class="data-table">
             <thead><tr><th>Product</th><th>Qty</th><th>Price</th><th>Sum</th></tr></thead>
             <tbody>
-                {% for item in check.items %}
+                {% for item in check["items"] %}
                 <tr>
                     <td>{{ item.product_name }}</td>
                     <td>{{ item.product_number }}</td>
@@ -41,5 +41,7 @@
     <p>No receipts for this cashier/period.</p>
     {% endfor %}
     <p class="check-totals"><strong>Total: {{ "%.2f"|format(total) }}</strong></p>
+{% else %}
+    <p>Select a cashier and date range, then click Show.</p>
 {% endif %}
 {% endblock %}
