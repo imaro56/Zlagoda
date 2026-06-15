@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}New customer card{% endblock %}
+{% block content %}
+<h1>New customer card</h1>
+<form hx-post="/customer_cards/">
+    <label>Card number <input type="text" name="card_number" required maxlength="13"></label>
+    <label>Surname <input type="text" name="cust_surname" required maxlength="50"></label>
+    <label>Name <input type="text" name="cust_name" required maxlength="50"></label>
+    <label>Patronymic <input type="text" name="cust_patronymic" maxlength="50"></label>
+    <label>Phone <input type="text" name="phone_number" required maxlength="13"></label>
+    <label>City <input type="text" name="city" maxlength="50"></label>
+    <label>Street <input type="text" name="street" maxlength="50"></label>
+    <label>ZIP <input type="text" name="zip_code" maxlength="9"></label>
+    <label>Discount % <input type="number" name="percent" required min="0" value="0"></label>
+    <button type="submit">Create</button>
+    <a href="/customer_cards">Cancel</a>
+</form>
+{% endblock %}

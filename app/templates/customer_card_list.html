@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Customer cards{% endblock %}
+{% block content %}
+<h1>Customer cards</h1>
+
+<a class="button-link" href="/customer_cards/new">New customer card</a>
+
+<table class="data-table">
+    <thead>
+        <tr>
+            <th>Card №</th><th>Surname</th><th>Name</th>
+            <th>Phone</th><th>City</th><th>%</th><th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for customer_card in customer_cards %}
+        {% include "_customer_card_row.html" %}
+        {% else %}
+        <tr><td colspan="7">No customer cards.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

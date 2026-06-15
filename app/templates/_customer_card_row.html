@@ -1,0 +1,19 @@
+<tr id="card-{{ customer_card.card_number }}">
+    <td>{{ customer_card.card_number }}</td>
+    <td>{{ customer_card.cust_surname }}</td>
+    <td>{{ customer_card.cust_name }}</td>
+    <td>{{ customer_card.phone_number }}</td>
+    <td>{{ customer_card.city or "—" }}</td>
+    <td>{{ customer_card.percent }}</td>
+    <td>
+        <a href="/customer_cards/{{ customer_card.card_number }}/edit">Edit</a>
+        {% if user.empl_role == 'manager' %}
+        <button type="button"
+            hx-delete="/customer_cards/{{ customer_card.card_number }}"
+            hx-confirm="Delete card {{ customer_card.card_number }}?"
+            hx-target="#card-{{ customer_card.card_number }}"
+            hx-swap="outerHTML">Delete</button>
+        {% endif %}
+        {% if error %}<span class="error">{{ error }}</span>{% endif %}
+    </td>
+</tr>

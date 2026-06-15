@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Edit customer card{% endblock %}
+{% block content %}
+<h1>Edit customer card {{ customer_card.card_number }}</h1>
+<form hx-put="/customer_cards/{{ customer_card.card_number }}">
+    <label>Card number <input type="text" value="{{ customer_card.card_number }}" readonly></label>
+    <label>Surname <input type="text" name="cust_surname" required maxlength="50" value="{{ customer_card.cust_surname }}"></label>
+    <label>Name <input type="text" name="cust_name" required maxlength="50" value="{{ customer_card.cust_name }}"></label>
+    <label>Patronymic <input type="text" name="cust_patronymic" maxlength="50" value="{{ customer_card.cust_patronymic or '' }}"></label>
+    <label>Phone <input type="text" name="phone_number" required maxlength="13" value="{{ customer_card.phone_number }}"></label>
+    <label>City <input type="text" name="city" maxlength="50" value="{{ customer_card.city or '' }}"></label>
+    <label>Street <input type="text" name="street" maxlength="50" value="{{ customer_card.street or '' }}"></label>
+    <label>ZIP <input type="text" name="zip_code" maxlength="9" value="{{ customer_card.zip_code or '' }}"></label>
+    <label>Discount % <input type="number" name="percent" required min="0" value="{{ customer_card.percent }}"></label>
+    <button type="submit">Save</button>
+    <a href="/customer_cards">Cancel</a>
+</form>
+{% endblock %}
