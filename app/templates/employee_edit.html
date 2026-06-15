@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Edit employee{% endblock %}
+{% block content %}
+<h1>Edit employee {{ employee.id_employee }}</h1>
+<form hx-put="/employees/{{ employee.id_employee }}">
+    <label>ID <input type="text" value="{{ employee.id_employee }}" readonly></label>
+    <label>Surname <input type="text" name="empl_surname" required maxlength="50" value="{{ employee.empl_surname }}"></label>
+    <label>Name <input type="text" name="empl_name" required maxlength="50" value="{{ employee.empl_name }}"></label>
+    <label>Patronymic <input type="text" name="empl_patronymic" maxlength="50" value="{{ employee.empl_patronymic or '' }}"></label>
+    <label>Role
+        <select name="empl_role" required>
+            <option value="cashier" {% if employee.empl_role == 'cashier' %}selected{% endif %}>Cashier</option>
+            <option value="manager" {% if employee.empl_role == 'manager' %}selected{% endif %}>Manager</option>
+        </select>
+    </label>
+    <label>Salary <input type="number" name="salary" required min="0" step="0.01" value="{{ employee.salary }}"></label>
+    <label>Date of birth <input type="date" name="date_of_birth" required value="{{ employee.date_of_birth }}"></label>
+    <label>Date of start <input type="date" name="date_of_start" required value="{{ employee.date_of_start }}"></label>
+    <label>Phone <input type="text" name="phone_number" required maxlength="13" value="{{ employee.phone_number }}"></label>
+    <label>City <input type="text" name="city" required maxlength="50" value="{{ employee.city }}"></label>
+    <label>Street <input type="text" name="street" required maxlength="50" value="{{ employee.street }}"></label>
+    <label>ZIP <input type="text" name="zip_code" required maxlength="9" value="{{ employee.zip_code }}"></label>
+    <button type="submit">Save</button>
+    <a href="/employees">Cancel</a>
+</form>
+{% endblock %}
