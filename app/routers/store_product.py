@@ -1,5 +1,3 @@
-from decimal import Decimal
-
 from fastapi import APIRouter, Depends, Form, HTTPException, Request, Response
 from fastapi.responses import HTMLResponse
 from psycopg.errors import ForeignKeyViolation
@@ -7,6 +5,9 @@ from psycopg.errors import ForeignKeyViolation
 from app.dependencies import CurrentUser, ManagerOnly, get_current_user, get_db
 from app.queries import store_product, product
 from app.templating import templates
+
+from typing import Annotated
+from app.schemas.store_product import StoreProductCreate, StoreProductUpdate
 
 router = APIRouter(prefix="/store_products", tags=["store_products"], dependencies=[Depends(get_current_user)])
 
@@ -34,20 +35,13 @@ def new_store_product_page(request: Request, user: ManagerOnly, cur=Depends(get_
 
 
 @router.post("/", response_class=Response)
-def create_store_product(user: ManagerOnly,
-        upc: str = Form(min_length=1, max_length=12),
-        upc_prom: str = Form(default=""),
-        id_product: int = Form(...),
-        selling_price: Decimal = Form(ge=0),
-        products_number: int = Form(ge=0),
-        promotional_product: bool = Form(False),
-        cur=Depends(get_db)):
-    store_product.create_store_product(cur, upc, {
-        "UPC_prom": upc_prom or None,
-        "id_product": id_product,
-        "selling_price": selling_price,
-        "products_number": products_number,
-        "promotional_product": promotional_product,
+def create_store_product(user: ManagerOnly, form: Annotated[StoreProductCreate, Form()], cur=Depends(get_db)):
+    store_product.create_store_product(cur, form.upc, {
+        "UPC_prom": form.upc_prom or None,
+        "id_product": form.id_product,
+        "selling_price": form.selling_price,
+        "products_number": form.products_number,
+        "promotional_product": form.promotional_product,
     })
     return Response(status_code=200, headers={"HX-Redirect": "/store_products"})
 
@@ -66,19 +60,13 @@ def edit_store_product_page(request: Request, user: ManagerOnly, upc: str, cur=D
 
 
 @router.put("/{upc}", response_class=Response)
-def edit_store_product(user: ManagerOnly, upc: str,
-        upc_prom: str = Form(default=""),
-        id_product: int = Form(...),
-        selling_price: Decimal = Form(ge=0),
-        products_number: int = Form(ge=0),
-        promotional_product: bool = Form(False),
-        cur=Depends(get_db)):
+def edit_store_product(user: ManagerOnly, upc: str, form: Annotated[StoreProductUpdate, Form()], cur=Depends(get_db)):
     updated = store_product.update_store_product(cur, upc, {
-        "UPC_prom": upc_prom or None,
-        "id_product": id_product,
-        "selling_price": selling_price,
-        "products_number": products_number,
-        "promotional_product": promotional_product,
+        "UPC_prom": form.upc_prom or None,
+        "id_product": form.id_product,
+        "selling_price": form.selling_price,
+        "products_number": form.products_number,
+        "promotional_product": form.promotional_product,
     })
     if updated is None:
         raise HTTPException(status_code=404, detail="Store product not found")
