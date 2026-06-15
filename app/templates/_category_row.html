@@ -1,17 +1,15 @@
-<p>
-    {{ category.category_name }} {% if user.empl_role == 'manager' %}
-    <a href="/categories/{{ category.category_number }}/edit">Edit</a>
-    <button
-        type="button"
-        hx-delete="/categories/{{ category.category_number }}"
-        hx-confirm="Are you sure you want to delete this category?"
-        hx-target="closest p"
-        hx-swap="outerHTML"
-    >
-        Delete
-    </button>
-    {% endif %}
-    {% if error %}
-    <span style="color: red;">{{ error }}</span>
-    {% endif %}
-</p>
+<tr id="category-{{ category.category_number }}">
+    <td>{{ category.category_number }}</td>
+    <td>{{ category.category_name }}</td>
+    <td>
+        {% if user.empl_role == 'manager' %}
+        <a href="/categories/{{ category.category_number }}/edit">Edit</a>
+        <button type="button"
+            hx-delete="/categories/{{ category.category_number }}"
+            hx-confirm="Delete category «{{ category.category_name }}»?"
+            hx-target="#category-{{ category.category_number }}"
+            hx-swap="outerHTML">Delete</button>
+        {% endif %}
+        {% if error %}<span class="error">{{ error }}</span>{% endif %}
+    </td>
+</tr>

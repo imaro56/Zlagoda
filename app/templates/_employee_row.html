@@ -1,17 +1,18 @@
-<p>
-    {{ employee.empl_name }} 
-    <a href="/employees/{{ employee.id_employee }}">Details</a>
-    <a href="/employees/{{ employee.id_employee }}/edit">Edit</a>
-    {% if employee.id_employee != user.id_employee %}
-    <button
-        type="button"
-        hx-delete="/employees/{{ employee.id_employee }}"
-        hx-confirm="Are you sure you want to delete this employee?"
-        hx-target="#err-{{ employee.id_employee }}"
-        hx-swap="innerHTML"
-    >
-        Delete
-    </button>
-    {% endif %}
-    <span class="error" id="err-{{ employee.id_employee }}"></span>
-</p>
+<tr>
+    <td>{{ employee.id_employee }}</td>
+    <td>{{ employee.empl_surname }}</td>
+    <td>{{ employee.empl_name }}</td>
+    <td>{{ employee.empl_role }}</td>
+    <td>
+        <a href="/employees/{{ employee.id_employee }}">Details</a>
+        <a href="/employees/{{ employee.id_employee }}/edit">Edit</a>
+        {% if employee.id_employee != user.id_employee %}
+        <button type="button"
+            hx-delete="/employees/{{ employee.id_employee }}"
+            hx-confirm="Are you sure you want to delete this employee?"
+            hx-target="#err-{{ employee.id_employee }}"
+            hx-swap="innerHTML">Delete</button>
+        {% endif %}
+        <span class="error" id="err-{{ employee.id_employee }}"></span>
+    </td>
+</tr>

@@ -1,7 +1,22 @@
-{% extends "base.html" %} {% block content %}
+{% extends "base.html" %}
+{% block title %}Categories{% endblock %}
+{% block content %}
 <h1>Categories</h1>
-{% for category in categories %}
-{% include "_category_row.html" %}
-{% endfor %} {% if user.empl_role == 'manager' %}
-<a href="/categories/new">New category</a>
-{% endif %} {% endblock %}
+
+{% if user.empl_role == 'manager' %}
+<a class="button-link" href="/categories/new">New category</a>
+{% endif %}
+
+<table class="data-table">
+    <thead>
+        <tr><th>№</th><th>Name</th><th></th></tr>
+    </thead>
+    <tbody>
+        {% for category in categories %}
+        {% include "_category_row.html" %}
+        {% else %}
+        <tr><td colspan="3">No categories.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
