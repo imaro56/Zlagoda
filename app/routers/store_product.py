@@ -25,11 +25,11 @@ def store_products_page(request: Request, user: CurrentUser, sort: str = "quanti
 
 
 @router.get("/new", response_class=HTMLResponse)
-def new_store_product_page(request: Request, user: ManagerOnly, cur=Depends(get_db)):
+def store_product_new_page(request: Request, user: ManagerOnly, cur=Depends(get_db)):
     products = product.get_all_products(cur)
     return templates.TemplateResponse(
         request=request,
-        name="new_store_product.html",
+        name="store_product_new.html",
         context={"user": user, "products": products},
     )
 
@@ -47,14 +47,14 @@ def create_store_product(user: ManagerOnly, form: Annotated[StoreProductCreate, 
 
 
 @router.get("/{upc}/edit", response_class=HTMLResponse)
-def edit_store_product_page(request: Request, user: ManagerOnly, upc: str, cur=Depends(get_db)):
+def store_product_edit_page(request: Request, user: ManagerOnly, upc: str, cur=Depends(get_db)):
     store_product_data = store_product.get_store_product(cur, upc)
     if store_product_data is None:
         raise HTTPException(status_code=404, detail="Store product not found")
     products = product.get_all_products(cur)
     return templates.TemplateResponse(
         request=request,
-        name="edit_store_product.html",
+        name="store_product_edit.html",
         context={"store_product": store_product_data, "products": products, "user": user},
     )
 

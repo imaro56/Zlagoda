@@ -1,0 +1,19 @@
+<tr id="sp-{{ store_product.upc }}">
+    <td>{{ store_product.upc }}</td>
+    <td>{{ store_product.product_name }}</td>
+    <td>{{ "%.2f"|format(store_product.selling_price) }}</td>
+    <td>{{ store_product.products_number }}</td>
+    <td>{{ "Yes" if store_product.promotional_product else "No" }}</td>
+    <td>{{ store_product.upc_prom or "—" }}</td>
+    <td>
+        {% if user.empl_role == 'manager' %}
+        <a href="/store_products/{{ store_product.upc }}/edit">Edit</a>
+        <button type="button"
+            hx-delete="/store_products/{{ store_product.upc }}"
+            hx-confirm="Delete store product {{ store_product.upc }}?"
+            hx-target="#sp-{{ store_product.upc }}"
+            hx-swap="outerHTML">Delete</button>
+        {% endif %}
+        {% if error %}<span class="error">{{ error }}</span>{% endif %}
+    </td>
+</tr>

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Store products{% endblock %}
+{% block content %}
+<h1>Store products</h1>
+
+{% if user.empl_role == 'manager' %}
+<a class="button-link" href="/store_products/new">New store product</a>
+{% endif %}
+
+<form class="toolbar" method="get" action="/store_products/">
+    <label>Sort
+        <select name="sort">
+            <option value="quantity" {% if sort == 'quantity' %}selected{% endif %}>By quantity</option>
+            <option value="name" {% if sort == 'name' %}selected{% endif %}>By name</option>
+        </select>
+    </label>
+    <button type="submit">Apply</button>
+</form>
+
+<table class="data-table">
+    <thead>
+        <tr><th>UPC</th><th>Product</th><th>Price</th><th>Qty</th><th>Promo</th><th>Promo UPC</th><th></th></tr>
+    </thead>
+    <tbody>
+        {% for store_product in store_products %}
+        {% include "_store_product_row.html" %}
+        {% else %}
+        <tr><td colspan="7">No store products.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

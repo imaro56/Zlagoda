@@ -25,7 +25,7 @@
     <tbody>
         {% for item in check.items %}
         <tr>
-            <td>{{ item.UPC }}</td>
+            <td>{{ item.upc }}</td>
             <td>{{ item.product_name }}</td>
             <td>{{ item.product_number }}</td>
             <td>{{ "%.2f"|format(item.selling_price) }}</td>

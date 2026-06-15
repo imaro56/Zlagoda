@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Edit store product{% endblock %}
+{% block content %}
+<h1>Edit store product {{ store_product.upc }}</h1>
+<form hx-put="/store_products/{{ store_product.upc }}">
+    <label>UPC <input type="text" value="{{ store_product.upc }}" readonly></label>
+    <label>Product
+        <select name="id_product" required>
+            {% for p in products %}
+            <option value="{{ p.id_product }}" {% if p.id_product == store_product.id_product %}selected{% endif %}>{{ p.product_name }}</option>
+            {% endfor %}
+        </select>
+    </label>
+    <label>Price <input type="number" name="selling_price" required min="0" step="0.01" value="{{ store_product.selling_price }}"></label>
+    <label>Quantity <input type="number" name="products_number" required min="0" value="{{ store_product.products_number }}"></label>
+    <label>Promo UPC <input type="text" name="upc_prom" maxlength="12" value="{{ store_product.upc_prom or '' }}"></label>
+    <label>Promotional <input type="checkbox" name="promotional_product" value="true" {% if store_product.promotional_product %}checked{% endif %}></label>
+    <button type="submit">Save</button>
+    <a href="/store_products">Cancel</a>
+</form>
+{% endblock %}
