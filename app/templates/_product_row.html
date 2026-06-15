@@ -1,0 +1,17 @@
+<tr id="product-{{ product.id_product }}">
+    <td>{{ product.id_product }}</td>
+    <td>{{ product.product_name }}</td>
+    <td>{{ product.category_name }}</td>
+    <td>{{ product.characteristics }}</td>
+    <td>
+        {% if user.empl_role == 'manager' %}
+        <a href="/products/{{ product.id_product }}/edit">Edit</a>
+        <button type="button"
+            hx-delete="/products/{{ product.id_product }}"
+            hx-confirm="Delete product «{{ product.product_name }}»?"
+            hx-target="#product-{{ product.id_product }}"
+            hx-swap="outerHTML">Delete</button>
+        {% endif %}
+        {% if error %}<span class="error">{{ error }}</span>{% endif %}
+    </td>
+</tr>

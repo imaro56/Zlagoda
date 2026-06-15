@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Edit product{% endblock %}
+{% block content %}
+<h1>Edit product</h1>
+<form hx-put="/products/{{ product.id_product }}">
+    <label>Name <input type="text" name="product_name" required maxlength="50" value="{{ product.product_name }}"></label>
+    <label>Category
+        <select name="category_number" required>
+            {% for c in categories %}
+            <option value="{{ c.category_number }}" {% if c.category_number == product.category_number %}selected{% endif %}>{{ c.category_name }}</option>
+            {% endfor %}
+        </select>
+    </label>
+    <label>Characteristics <input type="text" name="characteristics" required maxlength="100" value="{{ product.characteristics }}"></label>
+    <button type="submit">Save</button>
+    <a href="/products">Cancel</a>
+</form>
+{% endblock %}

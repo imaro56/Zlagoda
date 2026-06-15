@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}New product{% endblock %}
+{% block content %}
+<h1>New product</h1>
+<form hx-post="/products/">
+    <label>Name <input type="text" name="product_name" required maxlength="50"></label>
+    <label>Category
+        <select name="category_number" required>
+            {% for c in categories %}
+            <option value="{{ c.category_number }}">{{ c.category_name }}</option>
+            {% endfor %}
+        </select>
+    </label>
+    <label>Characteristics <input type="text" name="characteristics" required maxlength="100"></label>
+    <button type="submit">Create</button>
+    <a href="/products">Cancel</a>
+</form>
+{% endblock %}

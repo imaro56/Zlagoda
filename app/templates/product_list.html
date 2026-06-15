@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Products{% endblock %}
+{% block content %}
+<h1>Products</h1>
+
+{% if user.empl_role == 'manager' %}
+<a class="button-link" href="/products/new">New product</a>
+{% endif %}
+
+<table class="data-table">
+    <thead>
+        <tr><th>ID</th><th>Name</th><th>Category</th><th>Characteristics</th><th></th></tr>
+    </thead>
+    <tbody>
+        {% for product in products %}
+        {% include "_product_row.html" %}
+        {% else %}
+        <tr><td colspan="5">No products.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
