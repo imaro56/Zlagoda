@@ -97,6 +97,6 @@ def check_detail_page(request: Request, user: CurrentUser, check_number: str, cu
 
 @router.post("/", response_class=Response)
 def create_check(user: CashierOnly, upc: list[str] = Form([]), product_number: list[int] = Form([]), card_number: str = Form(""), conn=Depends(get_conn)):
-    data = CheckCreate(sales=[SaleCreate(UPC=u, product_number=n) for u, n in zip(upc, product_number)], card_number=card_number or None)
+    data = CheckCreate(sales=[SaleCreate(UPC=u, product_number=n) for u, n in zip(upc, product_number) if n > 0], card_number=card_number or None)
     check_number = check.create_check(conn, user["id_employee"], data)
     return Response(status_code=200, headers={"HX-Redirect": f"/checks/{check_number}"})
