@@ -6,6 +6,9 @@ from app.dependencies import CurrentUser, ManagerOnly, get_current_user, get_db
 from app.queries import product, category
 from app.templating import templates
 
+from typing import Annotated
+from app.schemas.product import ProductForm
+
 router = APIRouter(prefix="/products", tags=["products"], dependencies=[Depends(get_current_user)])
 
 
@@ -29,16 +32,8 @@ def new_product_page(request: Request, user: ManagerOnly, cur=Depends(get_db)):
 
 
 @router.post("/", response_class=Response)
-def create_product(user: ManagerOnly,
-        product_name: str = Form(min_length=1, max_length=50),
-        category_number: int = Form(...),
-        characteristics: str = Form(min_length=1, max_length=100),
-        cur=Depends(get_db)):
-    product.create_product(cur, {
-        "product_name": product_name,
-        "category_number": category_number,
-        "characteristics": characteristics,
-    })
+def create_product(user: ManagerOnly, form: Annotated[ProductForm, Form()], cur=Depends(get_db)):
+    product.create_product(cur, form.model_dump())
     return Response(status_code=200, headers={"HX-Redirect": "/products"})
 
 
@@ -56,16 +51,8 @@ def edit_product_page(request: Request, user: ManagerOnly, id_product: int, cur=
 
 
 @router.put("/{id_product}", response_class=Response)
-def edit_product(user: ManagerOnly, id_product: int,
-        product_name: str = Form(min_length=1, max_length=50),
-        category_number: int = Form(...),
-        characteristics: str = Form(min_length=1, max_length=100),
-        cur=Depends(get_db)):
-    updated = product.update_product(cur, id_product, {
-        "product_name": product_name,
-        "category_number": category_number,
-        "characteristics": characteristics,
-    })
+def edit_product(user: ManagerOnly, id_product: int, form: Annotated[ProductForm, Form()], cur=Depends(get_db)):
+    updated = product.update_product(cur, id_product, form.model_dump())
     if updated is None:
         raise HTTPException(status_code=404, detail="Product not found")
     return Response(status_code=200, headers={"HX-Redirect": "/products"})
