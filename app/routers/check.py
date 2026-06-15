@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, Form, Response
 from fastapi.responses import HTMLResponse
 
 from app.dependencies import CurrentUser, ManagerOnly, CashierOnly, get_current_user, get_db, get_conn
-from app.queries import check, employee, product
+from app.queries import check, employee, product, store_product, customer_card
 from app.templating import templates
 from app.schemas.check import CheckCreate, SaleCreate
 
@@ -71,6 +71,16 @@ def report_product(request: Request, user: ManagerOnly, id_product: int | None =
         name="report_product.html",
         context={"products": products, "qty": qty, "id_product": id_product,
                  "date_from": date_from, "date_to": date_to, "user": user},
+    )
+
+@router.get("/sale", response_class=HTMLResponse)
+def sale_page(request: Request, user: CashierOnly, cur=Depends(get_db)):
+    store_products = store_product.get_all_store_products(cur, "name")
+    cards = customer_card.get_all_cards(cur)
+    return templates.TemplateResponse(
+        request=request,
+        name="sale.html",
+        context={"store_products": store_products, "cards": cards, "user": user},
     )
 
 @router.get("/{check_number}", response_class=HTMLResponse)

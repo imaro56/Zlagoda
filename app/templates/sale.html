@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}New sale{% endblock %}
+{% block content %}
+<h1>New sale</h1>
+<form hx-post="/checks/">
+    <label>Customer card (optional)
+        <select name="card_number">
+            <option value="">— none —</option>
+            {% for card in cards %}
+            <option value="{{ card.card_number }}">{{ card.card_number }} — {{ card.cust_surname }} ({{ card.percent }}%)</option>
+            {% endfor %}
+        </select>
+    </label>
+
+    <table class="data-table">
+        <thead>
+            <tr><th>UPC</th><th>Product</th><th>Price</th><th>In stock</th><th>Quantity</th></tr>
+        </thead>
+        <tbody>
+            {% for sp in store_products %}
+            <tr>
+                <td>{{ sp.upc }}</td>
+                <td>{{ sp.product_name }}</td>
+                <td>{{ "%.2f"|format(sp.selling_price) }}</td>
+                <td>{{ sp.products_number }}</td>
+                <td>
+                    <input type="hidden" name="upc" value="{{ sp.upc }}">
+                    <input type="number" name="product_number" value="0" min="0" max="{{ sp.products_number }}">
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <button type="submit">Create sale</button>
+</form>
+{% endblock %}
