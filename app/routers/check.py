@@ -79,6 +79,19 @@ def sale_page(request: Request, user: CashierOnly, cur=Depends(get_db)):
         context={"store_products": store_products, "cards": cards, "user": user},
     )
 
+#Індивідуальне. Запит з групуванням (Дар'я)
+@router.get("/reports/sales_by_product", response_class=HTMLResponse)
+def report_sales_by_product(request: Request, user: ManagerOnly,
+        date_from: date | None = None, date_to: date | None = None, cur=Depends(get_db)):
+    rows = None
+    if date_from and date_to:
+        rows = check.sales_by_product(cur, date_from, date_to)
+    return templates.TemplateResponse(
+        request=request,
+        name="report_sales_by_product.html",
+        context={"rows": rows, "date_from": date_from, "date_to": date_to, "user": user},
+    )
+
 @router.get("/{check_number}", response_class=HTMLResponse)
 def check_detail_page(request: Request, user: CurrentUser, check_number: str, cur=Depends(get_db)):
     check_data = check.get_check_with_items(cur, check_number)

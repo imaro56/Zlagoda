@@ -206,3 +206,21 @@ def delete_check(cur, check_number):
         (check_number,),
     )
     return cur.fetchone()
+
+def sales_by_product(cur, date_from, date_to):
+    cur.execute(
+        """
+        SELECT p.product_name,
+               SUM(s.product_number) AS total_qty,
+               SUM(s.product_number * s.selling_price) AS total_sum
+        FROM sale s
+        JOIN store_product sp ON sp.UPC = s.UPC
+        JOIN product p ON p.id_product = sp.id_product
+        JOIN "check" c ON c.check_number = s.check_number
+        WHERE CAST(c.print_date AS DATE) BETWEEN %s AND %s
+        GROUP BY p.id_product, p.product_name
+        ORDER BY total_qty DESC
+        """,
+        (date_from, date_to),
+    )
+    return cur.fetchall()
