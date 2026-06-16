@@ -91,6 +91,15 @@ def report_sales_by_cashier(request: Request, user: ManagerOnly,
         context={"rows": rows, "date_from": date_from, "date_to": date_to, "user": user},
     )
 
+@router.get("/reports/categories_all_sold", response_class=HTMLResponse)
+def report_categories_all_sold(request: Request, user: ManagerOnly, cur=Depends(get_db)):
+    rows = check.categories_all_products_sold(cur)
+    return templates.TemplateResponse(
+        request=request,
+        name="report_categories_all_sold.html",
+        context={"rows": rows, "user": user},
+    )
+
 @router.get("/{check_number}", response_class=HTMLResponse)
 def check_detail_page(request: Request, user: CurrentUser, check_number: str, cur=Depends(get_db)):
     check_data = check.get_check_with_items(cur, check_number)

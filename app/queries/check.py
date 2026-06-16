@@ -224,3 +224,24 @@ def sales_by_cashier(cur, date_from, date_to):
         (date_from, date_to),
     )
     return cur.fetchall()
+
+# Індивідуальне. Запит з подвійним запереченням (Дар'я)
+def categories_all_products_sold(cur):
+    cur.execute(
+        """
+        SELECT cat.category_number, cat.category_name
+        FROM category cat
+        WHERE NOT EXISTS (
+                SELECT 1 FROM product p
+                WHERE p.category_number = cat.category_number
+                  AND NOT EXISTS (
+                      SELECT 1
+                      FROM store_product sp
+                      JOIN sale s ON s.UPC = sp.UPC
+                      WHERE sp.id_product = p.id_product
+                  )
+              )
+        ORDER BY cat.category_name
+        """
+    )
+    return cur.fetchall()

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Categories fully sold{% endblock %}
+{% block content %}
+<h1>Categories where every product was sold at least once</h1>
+<table class="data-table">
+    <thead><tr><th>#</th><th>Category</th></tr></thead>
+    <tbody>
+        {% for r in rows %}
+        <tr><td>{{ r.category_number }}</td><td>{{ r.category_name }}</td></tr>
+        {% else %}
+        <tr><td colspan="2">No such categories.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
