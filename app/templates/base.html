@@ -9,12 +9,18 @@
     <meta name="htmx-config" content='{"responseHandling":[{"code":"422","swap":true},{"code":"[23]..","swap":true},{"code":"204","swap":false},{"code":"[45]..","swap":false,"error":true},{"code":"...","swap":false}]}'>
 </head>
 <body>
-    <nav class="container-fluid">
-        <ul>
-            <li><strong>Zlagoda</strong></li>
-        </ul>
+    <nav>
+        <div class="nav-bar">
+            <strong>Zlagoda</strong>
+            {% if user %}
+            <div class="nav-user">
+                <span>{{ user.empl_name }} ({{ user.empl_role }})</span>
+                <a href="/logout">Logout</a>
+            </div>
+            {% endif %}
+        </div>
         {% if user %}
-        <ul>
+        <ul class="nav-menu">
             {% if user.empl_role == 'cashier' %}
             <li><a href="/checks/sale">New sale</a></li>
             <li><a href="/checks/mine">My checks</a></li>
@@ -32,8 +38,6 @@
             <li><a href="/products/">Products</a></li>
             <li><a href="/store_products/">Store products</a></li>
             <li><a href="/customer_cards/">Customers</a></li>
-            <li><span>{{ user.empl_name }} ({{ user.empl_role }})</span></li>
-            <li><a href="/logout">Logout</a></li>
         </ul>
         {% endif %}
     </nav>

@@ -25,21 +25,23 @@ body {
 nav {
   background: var(--navy);
   box-shadow: var(--shadow);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;  
-  flex-wrap: wrap;
-  gap: 12px 24px;
-  padding: 14px 40px;
+  padding: 12px 40px;
 }
-nav ul {
-  list-style: none;                
+.nav-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.nav-user { display: flex; align-items: center; gap: 10px; }
+.nav-menu {
+  list-style: none;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px 18px;
+  gap: 4px 10px;
   margin: 0;
-  padding: 0;                       
+  padding: 0;
 }
 nav li { list-style: none; }
 nav strong {                        
@@ -51,7 +53,7 @@ nav a {
   color: #d9e2f2;
   text-decoration: none;
   font-weight: 600;
-  padding: 8px 12px;
+  padding: 6px 9px;
   border-radius: 8px;
 }
 nav a:hover { color: #fff; background: rgba(255,255,255,.10); }
@@ -132,6 +134,10 @@ input:focus, select:focus {
 }
 .toolbar label { margin-bottom: 0; }
 .toolbar input, .toolbar select { width: auto; display: inline-block; margin-top: 4px; }
+.toolbar .button-link { margin-bottom: 0; }
+
+
+.print-actions button[hx-delete] { margin-left: auto; }
 
 .check-header {
   background: var(--navy); color: #fff;
@@ -169,7 +175,7 @@ form:not(.toolbar) select { margin-bottom: 6px; }
 
 .error { color: var(--danger); font-weight: 600; margin-left: 8px; }
 
-/* Print reports styles */
+.report-check button { margin-top: 14px; }
 .print-actions { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
 .print-actions .button-link, .print-actions button { margin: 0; }
 .print-header { text-align: center; margin-bottom: 18px; }

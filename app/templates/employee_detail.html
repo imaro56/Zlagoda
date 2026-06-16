@@ -16,12 +16,16 @@
       <dt>Zip</dt><dd>{{ employee.zip_code }}</dd>
       <dt>Login</dt><dd>{{ employee.login }}</dd>
   </dl>
-  {% if user.empl_role == 'manager' %}
-  <a href="/employees/{{ employee.id_employee }}/edit">Edit</a>
-  <div id="employee-error" style="color:red;"></div>
-  <button hx-delete="/employees/{{ employee.id_employee }}"
-    hx-confirm="Delete this employee?"
-    hx-target="#employee-error" hx-swap="innerHTML">Delete</button>
-  {% endif %}
-  <a href="/employees">Back to list</a>
-  {% endblock %}
+    <div class="print-actions">
+      {% if user.empl_role == 'manager' %}
+      <a class="button-link" href="/employees/{{ employee.id_employee }}/edit">Edit</a>
+      {% endif %}
+      <a class="button-link" href="/employees">Back to list</a>
+      {% if user.empl_role == 'manager' %}
+      <button hx-delete="/employees/{{ employee.id_employee }}"
+        hx-confirm="Delete this employee?"
+        hx-target="#employee-error" hx-swap="innerHTML">Delete</button>
+      {% endif %}
+    </div>
+  <div id="employee-error" class="error"></div>
+{% endblock %}
