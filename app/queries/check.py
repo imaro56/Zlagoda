@@ -207,19 +207,19 @@ def delete_check(cur, check_number):
     )
     return cur.fetchone()
 
-def sales_by_product(cur, date_from, date_to):
+# Індивідуальне. Запит з групуванням (Дар'я)
+def sales_by_cashier(cur, date_from, date_to):
     cur.execute(
         """
-        SELECT p.product_name,
-               SUM(s.product_number) AS total_qty,
-               SUM(s.product_number * s.selling_price) AS total_sum
-        FROM sale s
-        JOIN store_product sp ON sp.UPC = s.UPC
-        JOIN product p ON p.id_product = sp.id_product
-        JOIN "check" c ON c.check_number = s.check_number
+        SELECT e.id_employee, e.empl_surname, e.empl_name,
+               COUNT(DISTINCT c.check_number)              AS check_count,
+               SUM(s.product_number * s.selling_price)     AS total_sum
+        FROM employee e
+        JOIN "check" c  ON c.id_employee = e.id_employee
+        JOIN sale s     ON s.check_number = c.check_number
         WHERE CAST(c.print_date AS DATE) BETWEEN %s AND %s
-        GROUP BY p.id_product, p.product_name
-        ORDER BY total_qty DESC
+        GROUP BY e.id_employee, e.empl_surname, e.empl_name
+        ORDER BY total_sum DESC
         """,
         (date_from, date_to),
     )

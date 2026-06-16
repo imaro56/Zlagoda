@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Sales by cashier{% endblock %}
+{% block content %}
+<h1>Sales by cashier (period)</h1>
+<form class="toolbar" method="get" action="/checks/reports/sales_by_cashier">
+    <label>From <input type="date" name="date_from" value="{{ date_from or '' }}"></label>
+    <label>To <input type="date" name="date_to" value="{{ date_to or '' }}"></label>
+    <button type="submit">Show</button>
+</form>
+{% if rows is not none %}
+<table class="data-table">
+    <thead><tr><th>Surname</th><th>Name</th><th>Checks</th><th>Total sum</th></tr></thead>
+    <tbody>
+        {% for r in rows %}
+        <tr><td>{{ r.empl_surname }}</td><td>{{ r.empl_name }}</td>
+            <td>{{ r.check_count }}</td><td>{{ "%.2f"|format(r.total_sum) }}</td></tr>
+        {% else %}
+        <tr><td colspan="4">No sales in this period.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+{% endblock %}

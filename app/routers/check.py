@@ -79,16 +79,15 @@ def sale_page(request: Request, user: CashierOnly, cur=Depends(get_db)):
         context={"store_products": store_products, "cards": cards, "user": user},
     )
 
-#Індивідуальне. Запит з групуванням (Дар'я)
-@router.get("/reports/sales_by_product", response_class=HTMLResponse)
-def report_sales_by_product(request: Request, user: ManagerOnly,
-        date_from: date | None = None, date_to: date | None = None, cur=Depends(get_db)):
+@router.get("/reports/sales_by_cashier", response_class=HTMLResponse)
+def report_sales_by_cashier(request: Request, user: ManagerOnly,
+        date_from: OptDate = None, date_to: OptDate = None, cur=Depends(get_db)):
     rows = None
     if date_from and date_to:
-        rows = check.sales_by_product(cur, date_from, date_to)
+        rows = check.sales_by_cashier(cur, date_from, date_to)
     return templates.TemplateResponse(
         request=request,
-        name="report_sales_by_product.html",
+        name="report_sales_by_cashier.html",
         context={"rows": rows, "date_from": date_from, "date_to": date_to, "user": user},
     )
 
