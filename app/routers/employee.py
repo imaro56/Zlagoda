@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Form, HTTPException, Request, Response
 from fastapi.responses import HTMLResponse
-from psycopg.errors import ForeignKeyViolation
+from psycopg.errors import ForeignKeyViolation, RaiseException
 
 from app.dependencies import CurrentUser, ManagerOnly, get_current_user, get_db
 from app.queries import employee
@@ -32,14 +32,16 @@ def new_employee_page(request: Request, user: ManagerOnly):
         context={"user": user},
     )
 
-
 @router.post("/", response_class=HTMLResponse)
 def create_employee(user: ManagerOnly, form: Annotated[EmployeeCreate, Form()], cur=Depends(get_db)):
     data = form.model_dump()
     data["password_hash"] = hash_password(data.pop("password"))
-    employee.create_employee(cur, data)
+    try:
+        employee.create_employee(cur, data)
+    except RaiseException:
+        cur.connection.rollback()
+        return HTMLResponse('<p class="error">Employee must be 18 or older</p>', status_code=422)
     return Response(status_code=200, headers={"HX-Redirect": "/employees"})
-
 
 @router.get("/me", response_class=HTMLResponse)
 def employee_me_page(request: Request, user: CurrentUser, cur=Depends(get_db)):
@@ -79,7 +81,11 @@ def edit_employee_page(request: Request, user: ManagerOnly, id_employee: str, cu
 @router.put("/{id_employee}", response_class=HTMLResponse)
 def edit_employee(user: ManagerOnly, id_employee: str, form: Annotated[EmployeeUpdate, Form()], cur=Depends(get_db)):
     data = form.model_dump()
-    updated = employee.update_employee(cur, id_employee, data)
+    try:
+        updated = employee.update_employee(cur, id_employee, data)
+    except RaiseException:
+        cur.connection.rollback()
+        return HTMLResponse('<p class="error">Employee must be 18 or older</p>', status_code=422)
     if updated is None:
         raise HTTPException(status_code=404, detail="Employee not found")
     return Response(status_code=200, headers={"HX-Redirect": f"/employees/{id_employee}"})

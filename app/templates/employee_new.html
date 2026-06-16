@@ -2,7 +2,7 @@
 {% block title %}New employee{% endblock %}
 {% block content %}
 <h1>New employee</h1>
-<form hx-post="/employees/">
+<form hx-post="/employees/" hx-target="#form-error" hx-swap="innerHTML">
     <label>ID <input type="text" name="id_employee" required maxlength="10"></label>
     <label>Surname <input type="text" name="empl_surname" required maxlength="50"></label>
     <label>Name <input type="text" name="empl_name" required maxlength="50"></label>
@@ -22,6 +22,7 @@
     <label>ZIP <input type="text" name="zip_code" required maxlength="9"></label>
     <label>Login <input type="text" name="login" required></label>
     <label>Password <input type="password" name="password" required minlength="8"></label>
+    <div id="form-error" class="error"></div>
     <button type="submit">Create</button>
     <a href="/employees">Cancel</a>
 </form>

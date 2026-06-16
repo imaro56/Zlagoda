@@ -2,7 +2,7 @@
 {% block title %}Edit employee{% endblock %}
 {% block content %}
 <h1>Edit employee {{ employee.id_employee }}</h1>
-<form hx-put="/employees/{{ employee.id_employee }}">
+<form hx-put="/employees/{{ employee.id_employee }}" hx-target="#form-error" hx-swap="innerHTML">
     <label>ID <input type="text" value="{{ employee.id_employee }}" readonly></label>
     <label>Surname <input type="text" name="empl_surname" required maxlength="50" value="{{ employee.empl_surname }}"></label>
     <label>Name <input type="text" name="empl_name" required maxlength="50" value="{{ employee.empl_name }}"></label>
@@ -20,6 +20,7 @@
     <label>City <input type="text" name="city" required maxlength="50" value="{{ employee.city }}"></label>
     <label>Street <input type="text" name="street" required maxlength="50" value="{{ employee.street }}"></label>
     <label>ZIP <input type="text" name="zip_code" required maxlength="9" value="{{ employee.zip_code }}"></label>
+    <div id="form-error" class="error"></div>
     <button type="submit">Save</button>
     <a href="/employees">Cancel</a>
 </form>
