@@ -1,9 +1,18 @@
+from datetime import date
 from psycopg.rows import dict_row
 from app.db import pool
 from app.queries.employee import get_employee
 from fastapi import Depends, HTTPException
 from starlette.requests import Request
-from typing import Annotated
+from typing import Annotated, Optional
+from pydantic import BeforeValidator
+
+
+def _blank_to_none(v):
+    return None if v in ("", None) else v
+
+OptDate = Annotated[Optional[date], BeforeValidator(_blank_to_none)]
+OptInt = Annotated[Optional[int], BeforeValidator(_blank_to_none)]
 
 
 def get_conn():

@@ -61,10 +61,12 @@ def get_checks_by_cashier(cur, id_employee, date_from, date_to):
         """
         SELECT check_number, print_date, sum_total, vat, id_employee, card_number
         FROM "check"
-        WHERE id_employee = %s AND print_date::date BETWEEN %s AND %s
+        WHERE id_employee = %s
+          AND (%s::date IS NULL OR print_date::date >= %s)
+          AND (%s::date IS NULL OR print_date::date <= %s)
         ORDER BY print_date
         """,
-        (id_employee, date_from, date_to),
+        (id_employee, date_from, date_from, date_to, date_to),
     )
     return _attach_items(cur, cur.fetchall())
 
@@ -73,9 +75,11 @@ def sum_checks_by_cashier(cur, id_employee, date_from, date_to):
         """
         SELECT COALESCE(SUM(sum_total), 0) AS total
         FROM "check"
-        WHERE id_employee = %s AND print_date::date BETWEEN %s AND %s
+        WHERE id_employee = %s
+          AND (%s::date IS NULL OR print_date::date >= %s)
+          AND (%s::date IS NULL OR print_date::date <= %s)
         """,
-        (id_employee, date_from, date_to),
+        (id_employee, date_from, date_from, date_to, date_to),
     )
     return cur.fetchone()["total"]
 
@@ -84,10 +88,11 @@ def get_all_checks(cur, date_from, date_to):
         """
         SELECT check_number, print_date, sum_total, vat, id_employee, card_number
         FROM "check"
-        WHERE print_date::date BETWEEN %s AND %s
+        WHERE (%s::date IS NULL OR print_date::date >= %s)
+          AND (%s::date IS NULL OR print_date::date <= %s)
         ORDER BY print_date
         """,
-        (date_from, date_to),
+        (date_from, date_from, date_to, date_to),
     )
     return _attach_items(cur, cur.fetchall())
 
@@ -97,9 +102,10 @@ def sum_checks_all(cur, date_from, date_to):
         """
         SELECT COALESCE(SUM(sum_total), 0) AS total
         FROM "check"
-        WHERE print_date::date BETWEEN %s AND %s
+        WHERE (%s::date IS NULL OR print_date::date >= %s)
+          AND (%s::date IS NULL OR print_date::date <= %s)
         """,
-        (date_from, date_to),
+        (date_from, date_from, date_to, date_to),
     )
     return cur.fetchone()["total"]
 
@@ -112,9 +118,10 @@ def product_qty_sold(cur, id_product, date_from, date_to):
         JOIN store_product sp ON sp.UPC = s.UPC
         JOIN "check" c ON c.check_number = s.check_number
         WHERE sp.id_product = %s
-          AND c.print_date::date BETWEEN %s AND %s
+          AND (%s::date IS NULL OR c.print_date::date >= %s)
+          AND (%s::date IS NULL OR c.print_date::date <= %s)
         """,
-        (id_product, date_from, date_to),
+        (id_product, date_from, date_from, date_to, date_to),
     )
     return cur.fetchone()["qty"]
 

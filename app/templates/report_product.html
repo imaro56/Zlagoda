@@ -3,9 +3,9 @@
 {% block content %}
 <h1>Quantity of a product sold for a period</h1>
 
-<form class="toolbar" method="get" action="/checks/reports/product">
+<form class="toolbar" hx-get="/checks/reports/product" hx-target="#results" hx-select="#results" hx-swap="outerHTML" hx-push-url="true">
     <label>Product
-        <select name="id_product">
+        <select name="id_product" onchange="this.form.querySelector('button[type=submit]').disabled = !this.value">
             <option value="">— select —</option>
             {% for p in products %}
             <option value="{{ p.id_product }}" {% if p.id_product == id_product %}selected{% endif %}>
@@ -16,12 +16,14 @@
     </label>
     <label>From <input type="date" name="date_from" value="{{ date_from or '' }}"></label>
     <label>To <input type="date" name="date_to" value="{{ date_to or '' }}"></label>
-    <button type="submit">Show</button>
+    <button type="submit" {% if id_product is none %}disabled{% endif %}>Show</button>
 </form>
 
-{% if qty is not none %}
-<p class="check-totals"><strong>Sold: {{ qty }} units</strong></p>
-{% else %}
-<p>Select a product and date range to see how many were sold.</p>
-{% endif %}
+<div id="results">
+    {% if qty is not none %}
+    <p class="check-totals"><strong>Sold: {{ qty }} units</strong></p>
+    {% else %}
+    <p>Select a product to see how many were sold.</p>
+    {% endif %}
+</div>
 {% endblock %}

@@ -3,13 +3,14 @@
 {% block content %}
 <h1>All receipts for a period</h1>
 
-<form class="toolbar" method="get" action="/checks/reports/all">
+<form class="toolbar" hx-get="/checks/reports/all" hx-target="#results" hx-select="#results" hx-swap="outerHTML" hx-push-url="true">
     <label>From <input type="date" name="date_from" value="{{ date_from or '' }}"></label>
     <label>To <input type="date" name="date_to" value="{{ date_to or '' }}"></label>
     <button type="submit">Show</button>
 </form>
 
-{% if checks is not none %}
+<div id="results">
+    {% if checks %}
     {% for check in checks %}
     <div class="report-check">
         <h3>№{{ check.check_number }} · {{ check.print_date.strftime("%Y-%m-%d %H:%M") }} · {{ "%.2f"|format(check.sum_total) }}</h3>
@@ -26,19 +27,19 @@
                 {% endfor %}
             </tbody>
         </table>
-    {% if user.empl_role == "manager" %}
-    <button hx-delete="/checks/{{ check.check_number }}"
-            hx-confirm="Delete this check?"
-            hx-on::after-request="window.location='/checks/reports/all'">
-    Delete
-    </button>
-    {% endif %}
+        {% if user.empl_role == "manager" %}
+        <button hx-delete="/checks/{{ check.check_number }}"
+                hx-confirm="Delete this check?"
+                hx-target="closest .report-check"
+                hx-swap="outerHTML">
+        Delete
+        </button>
+        {% endif %}
     </div>
-    {% else %}
-    <p>No receipts for this period.</p>
     {% endfor %}
     <p class="check-totals"><strong>Grand total: {{ "%.2f"|format(total) }}</strong></p>
-{% else %}
-    <p>Select a date range and click Show to view receipts.</p>
-{% endif %}
+    {% else %}
+    <p>No receipts found.</p>
+    {% endif %}
+</div>
 {% endblock %}

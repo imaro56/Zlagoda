@@ -3,9 +3,9 @@
 {% block content %}
 <h1>Receipts by cashier for a period</h1>
 
-<form class="toolbar" method="get" action="/checks/reports/by-cashier">
+<form class="toolbar" hx-get="/checks/reports/by-cashier" hx-target="#results" hx-select="#results" hx-swap="outerHTML" hx-push-url="true">
     <label>Cashier
-        <select name="id_employee">
+        <select name="id_employee" onchange="this.form.querySelector('button[type=submit]').disabled = !this.value">
             <option value="">— select —</option>
             {% for c in cashiers %}
             <option value="{{ c.id_employee }}" {% if c.id_employee == id_employee %}selected{% endif %}>
@@ -16,10 +16,13 @@
     </label>
     <label>From <input type="date" name="date_from" value="{{ date_from or '' }}"></label>
     <label>To <input type="date" name="date_to" value="{{ date_to or '' }}"></label>
-    <button type="submit">Show</button>
+    <button type="submit" {% if not id_employee %}disabled{% endif %}>Show</button>
 </form>
 
-{% if checks is not none %}
+<div id="results">
+    {% if checks is none %}
+    <p>Select a cashier to see their receipts.</p>
+    {% elif checks %}
     {% for check in checks %}
     <div class="report-check">
         <h3>№{{ check.check_number }} · {{ check.print_date.strftime("%Y-%m-%d %H:%M") }} · {{ "%.2f"|format(check.sum_total) }}</h3>
@@ -37,11 +40,10 @@
             </tbody>
         </table>
     </div>
-    {% else %}
-    <p>No receipts for this cashier/period.</p>
     {% endfor %}
     <p class="check-totals"><strong>Total: {{ "%.2f"|format(total) }}</strong></p>
-{% else %}
-    <p>Select a cashier and date range, then click Show.</p>
-{% endif %}
+    {% else %}
+    <p>No receipts for this cashier in this period.</p>
+    {% endif %}
+</div>
 {% endblock %}

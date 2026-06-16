@@ -3,10 +3,11 @@ from datetime import date
 from fastapi import APIRouter, Depends, HTTPException, Request, Form, Response
 from fastapi.responses import HTMLResponse
 
-from app.dependencies import CurrentUser, ManagerOnly, CashierOnly, get_current_user, get_db, get_conn
+from app.dependencies import CurrentUser, ManagerOnly, CashierOnly, get_current_user, get_db, get_conn, OptDate, OptInt
 from app.queries import check, employee, product, store_product, customer_card
 from app.templating import templates
 from app.schemas.check import CheckCreate, SaleCreate
+from pydantic import ValidationError
 
 router = APIRouter(prefix="/checks", tags=["checks"], dependencies=[Depends(get_current_user)])
 
@@ -29,13 +30,7 @@ def my_checks_page(request: Request, user: CurrentUser,
     )
 
 @router.get("/reports/all", response_class=HTMLResponse)
-def report_all(request: Request, user: ManagerOnly,
-        date_from: date | None = None, date_to: date | None = None, cur=Depends(get_db)):
-    today = date.today()
-    if date_from is None:
-        date_from = today
-    if date_to is None:
-        date_to = today
+def report_all(request: Request, user: ManagerOnly, date_from: OptDate = None, date_to: OptDate = None, cur=Depends(get_db)):
     checks = check.get_all_checks(cur, date_from, date_to)
     total = check.sum_checks_all(cur, date_from, date_to)
     return templates.TemplateResponse(
@@ -47,11 +42,10 @@ def report_all(request: Request, user: ManagerOnly,
 
 
 @router.get("/reports/by-cashier", response_class=HTMLResponse)
-def report_by_cashier(request: Request, user: ManagerOnly, id_employee: str | None = None,
-        date_from: date | None = None, date_to: date | None = None, cur=Depends(get_db)):
+def report_by_cashier(request: Request, user: ManagerOnly, id_employee: str | None = None, date_from: OptDate = None, date_to: OptDate = None, cur=Depends(get_db)):
     cashiers = employee.get_all_cashiers(cur)
     checks = total = None
-    if id_employee and date_from and date_to:
+    if id_employee:
         checks = check.get_checks_by_cashier(cur, id_employee, date_from, date_to)
         total = check.sum_checks_by_cashier(cur, id_employee, date_from, date_to)
     return templates.TemplateResponse(
@@ -63,11 +57,10 @@ def report_by_cashier(request: Request, user: ManagerOnly, id_employee: str | No
 
 
 @router.get("/reports/product", response_class=HTMLResponse)
-def report_product(request: Request, user: ManagerOnly, id_product: int | None = None,
-        date_from: date | None = None, date_to: date | None = None, cur=Depends(get_db)):
+def report_product(request: Request, user: ManagerOnly, id_product: OptInt = None, date_from: OptDate = None, date_to: OptDate = None, cur=Depends(get_db)):
     products = product.get_all_products(cur)
     qty = None
-    if id_product and date_from and date_to:
+    if id_product is not None:
         qty = check.product_qty_sold(cur, id_product, date_from, date_to)
     return templates.TemplateResponse(
         request=request,
@@ -100,9 +93,12 @@ def check_detail_page(request: Request, user: CurrentUser, check_number: str, cu
 
 @router.post("/", response_class=Response)
 def create_check(user: CashierOnly, upc: list[str] = Form([]), product_number: list[int] = Form([]), card_number: str = Form(""), conn=Depends(get_conn)):
-    data = CheckCreate(sales=[SaleCreate(UPC=u, product_number=n) for u, n in zip(upc, product_number) if n > 0], card_number=card_number or None)
-    check_number = check.create_check(conn, user["id_employee"], data)
-    return Response(status_code=200, headers={"HX-Redirect": f"/checks/{check_number}"})
+    try:
+        data = CheckCreate(sales=[SaleCreate(UPC=u, product_number=n) for u, n in zip(upc, product_number) if n > 0], card_number=card_number or None)
+        check_number = check.create_check(conn, user["id_employee"], data)
+        return Response(status_code=200, headers={"HX-Redirect": f"/checks/{check_number}"})
+    except ValidationError as e:
+        raise HTTPException(status_code=422, detail="Not valid")
 
 
 @router.delete("/{check_number}", response_class=Response)
