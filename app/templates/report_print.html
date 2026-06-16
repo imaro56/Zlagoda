@@ -1,0 +1,34 @@
+{% extends "print_base.html" %}
+{% block title %}Receipts report{% endblock %}
+{% block report_title %}Receipts report{% endblock %}
+{% block report_body %}
+{% if subtitle %}
+<p class="print-meta">{{ subtitle }}</p>
+{% endif %}
+{% if date_from or date_to %}
+<p class="print-meta">Period: {{ date_from or "…" }} — {{ date_to or "…" }}</p>
+{% endif %}
+{% if checks %}
+{% for check in checks %}
+<div class="report-check">
+    <h3>№{{ check.check_number }} · {{ check.print_date.strftime("%Y-%m-%d %H:%M") }} · {{ "%.2f"|format(check.sum_total) }}</h3>
+    <table class="data-table">
+        <thead><tr><th>Product</th><th>Qty</th><th>Price</th><th>Sum</th></tr></thead>
+        <tbody>
+            {% for item in check["items"] %}
+            <tr>
+                <td>{{ item.product_name }}</td>
+                <td>{{ item.product_number }}</td>
+                <td>{{ "%.2f"|format(item.selling_price) }}</td>
+                <td>{{ "%.2f"|format(item.line_total) }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endfor %}
+<p class="check-totals"><strong>Grand total: {{ "%.2f"|format(total) }}</strong></p>
+{% else %}
+<p>No receipts found.</p>
+{% endif %}
+{% endblock %}

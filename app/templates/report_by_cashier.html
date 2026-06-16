@@ -42,6 +42,7 @@
     </div>
     {% endfor %}
     <p class="check-totals"><strong>Total: {{ "%.2f"|format(total) }}</strong></p>
+    <a class="button-link" href="/checks/reports/by-cashier/print?id_employee={{ id_employee }}&date_from={{ date_from or '' }}&date_to={{ date_to or '' }}">Print</a>
     {% else %}
     <p>No receipts for this cashier in this period.</p>
     {% endif %}

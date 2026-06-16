@@ -1,0 +1,12 @@
+{% extends "print_base.html" %}
+{% block title %}Product sold{% endblock %}
+{% block report_title %}Quantity of a product sold{% endblock %}
+{% block report_body %}
+{% if product %}
+<p class="print-meta">Product: {{ product.product_name }}</p>
+{% endif %}
+{% if date_from or date_to %}
+<p class="print-meta">Period: {{ date_from or "…" }} — {{ date_to or "…" }}</p>
+{% endif %}
+<p class="check-totals"><strong>Sold: {{ qty }} units</strong></p>
+{% endblock %}

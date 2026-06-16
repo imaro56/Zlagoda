@@ -1,0 +1,18 @@
+{% extends "print_base.html" %}
+{% block title %}Products{% endblock %}
+{% block report_title %}Products report{% endblock %}
+{% block report_body %}
+{% set readonly = True %}
+<table class="data-table">
+    <thead>
+        <tr><th>ID</th><th>Name</th><th>Category</th><th>Characteristics</th></tr>
+    </thead>
+    <tbody>
+        {% for product in products %}
+        {% include "_product_row.html" %}
+        {% else %}
+        <tr><td colspan="4">No products.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

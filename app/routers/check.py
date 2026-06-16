@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Form, Response
 from fastapi.responses import HTMLResponse
@@ -69,6 +69,7 @@ def report_product(request: Request, user: ManagerOnly, id_product: OptInt = Non
                  "date_from": date_from, "date_to": date_to, "user": user},
     )
 
+
 @router.get("/sale", response_class=HTMLResponse)
 def sale_page(request: Request, user: CashierOnly, cur=Depends(get_db)):
     store_products = store_product.get_all_store_products(cur, "name")
@@ -128,3 +129,44 @@ def delete_check(user: ManagerOnly, check_number: str, cur=Depends(get_db)):
     if deleted is None:
         raise HTTPException(status_code=404, detail="Check not found")
     return Response(status_code=200)
+
+
+@router.get("/reports/print", response_class=HTMLResponse)
+def report_print(request: Request, user: ManagerOnly, date_from: OptDate = None, date_to: OptDate = None, cur=Depends(get_db)):
+    checks = check.get_all_checks(cur, date_from, date_to)
+    total = check.sum_checks_all(cur, date_from, date_to)
+    return templates.TemplateResponse(
+        request=request,
+        name="report_print.html",
+        context={"checks": checks, "total": total,
+                 "date_from": date_from, "date_to": date_to,
+                 "user": user, "generated_at": datetime.now(), "back_url": "/checks/reports/all"},
+    )
+
+
+@router.get("/reports/by-cashier/print", response_class=HTMLResponse)
+def report_by_cashier_print(request: Request, user: ManagerOnly, id_employee: str, date_from: OptDate = None, date_to: OptDate = None, cur=Depends(get_db)):
+    checks = check.get_checks_by_cashier(cur, id_employee, date_from, date_to)
+    total = check.sum_checks_by_cashier(cur, id_employee, date_from, date_to)
+    cashier = employee.get_employee(cur, id_employee)
+    subtitle = f"Cashier: {cashier['empl_surname']} {cashier['empl_name']}" if cashier else None
+    return templates.TemplateResponse(
+        request=request,
+        name="report_print.html",
+        context={"checks": checks, "total": total, "subtitle": subtitle,
+                 "date_from": date_from, "date_to": date_to,
+                 "user": user, "generated_at": datetime.now(), "back_url": "/checks/reports/by-cashier"},
+    )
+
+
+@router.get("/reports/product/print", response_class=HTMLResponse)
+def report_product_print(request: Request, user: ManagerOnly, id_product: int, date_from: OptDate = None, date_to: OptDate = None, cur=Depends(get_db)):
+    qty = check.product_qty_sold(cur, id_product, date_from, date_to)
+    product_data = product.get_product(cur, id_product)
+    return templates.TemplateResponse(
+        request=request,
+        name="report_product_print.html",
+        context={"qty": qty, "product": product_data,
+                 "date_from": date_from, "date_to": date_to,
+                 "user": user, "generated_at": datetime.now(), "back_url": "/checks/reports/product"},
+    )

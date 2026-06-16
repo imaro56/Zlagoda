@@ -7,6 +7,7 @@ from app.queries import employee
 from app.schemas.employee import EmployeeCreate, EmployeeUpdate
 from app.templating import templates
 from typing import Annotated
+from datetime import datetime
 
 from app.security import hash_password
 
@@ -49,6 +50,17 @@ def employee_me_page(request: Request, user: CurrentUser, cur=Depends(get_db)):
         request=request,
         name="employee_detail.html",
         context={"employee": employee_data, "user": user},
+    )
+
+
+@router.get("/print", response_class=HTMLResponse)
+def employees_print(request: Request, user: ManagerOnly, cur=Depends(get_db)):
+    employees = employee.get_all_employees(cur)
+    return templates.TemplateResponse(
+        request=request,
+        name="employee_print.html",
+        context={"employees": employees, "user": user,
+                 "generated_at": datetime.now(), "back_url": "/employees"},
     )
 
 

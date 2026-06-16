@@ -7,6 +7,7 @@ from app.queries import customer_card
 from app.templating import templates
 
 from typing import Annotated
+from datetime import datetime
 from app.schemas.customer_card import CustomerCardCreate, CustomerCardUpdate
 
 router = APIRouter(prefix="/customer_cards", tags=["customer_cards"], dependencies=[Depends(get_current_user)])
@@ -72,3 +73,14 @@ def delete_customer_card(request: Request, user: ManagerOnly, card_number: str, 
     if deleted is None:
         raise HTTPException(status_code=404, detail="Customer card not found")
     return Response(status_code=200)
+    
+
+@router.get("/print", response_class=HTMLResponse)
+def customer_cards_print(request: Request, user: ManagerOnly, cur=Depends(get_db)):
+    customer_cards = customer_card.get_all_cards(cur)
+    return templates.TemplateResponse(
+        request=request,
+        name="customer_print.html",
+        context={"customer_cards": customer_cards, "user": user,
+                 "generated_at": datetime.now(), "back_url": "/customer_cards"},
+    )

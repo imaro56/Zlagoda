@@ -1,0 +1,18 @@
+{% extends "print_base.html" %}
+{% block title %}Categories{% endblock %}
+{% block report_title %}Categories report{% endblock %}
+{% block report_body %}
+{% set readonly = True %}
+<table class="data-table">
+    <thead>
+        <tr><th>№</th><th>Name</th></tr>
+    </thead>
+    <tbody>
+        {% for category in categories %}
+        {% include "_category_row.html" %}
+        {% else %}
+        <tr><td colspan="2">No categories.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

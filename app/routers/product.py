@@ -5,6 +5,7 @@ from psycopg.errors import ForeignKeyViolation
 from app.dependencies import CurrentUser, ManagerOnly, get_current_user, get_db
 from app.queries import product, category
 from app.templating import templates
+from datetime import datetime
 
 from typing import Annotated
 from app.schemas.product import ProductForm
@@ -73,3 +74,14 @@ def delete_product(request: Request, user: ManagerOnly, id_product: int, cur=Dep
     if deleted is None:
         raise HTTPException(status_code=404, detail="Product not found")
     return Response(status_code=200)
+
+
+@router.get("/print", response_class=HTMLResponse)
+def products_print(request: Request, user: ManagerOnly, cur=Depends(get_db)):
+    products = product.get_all_products(cur)
+    return templates.TemplateResponse(
+        request=request,
+        name="product_print.html",
+        context={"products": products, "user": user,
+                 "generated_at": datetime.now(), "back_url": "/products"},
+    )

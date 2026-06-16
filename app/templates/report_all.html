@@ -7,6 +7,7 @@
     <label>From <input type="date" name="date_from" value="{{ date_from or '' }}"></label>
     <label>To <input type="date" name="date_to" value="{{ date_to or '' }}"></label>
     <button type="submit">Show</button>
+    <a class="button-link" href="/checks/reports/print?date_from={{ date_from or '' }}&date_to={{ date_to or '' }}">Print</a>
 </form>
 
 <div id="results">

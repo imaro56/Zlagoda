@@ -168,3 +168,21 @@ form:not(.toolbar) input,
 form:not(.toolbar) select { margin-bottom: 6px; }
 
 .error { color: var(--danger); font-weight: 600; margin-left: 8px; }
+
+/* Print reports styles */
+.print-actions { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+.print-actions .button-link, .print-actions button { margin: 0; }
+.print-header { text-align: center; margin-bottom: 18px; }
+.print-header h1 { margin: 0 0 4px; }
+.print-meta { color: var(--muted); font-size: .9rem; margin: 0; }
+.print-footer { text-align: center; color: var(--muted); font-size: .85rem; margin-top: 28px; }
+
+@media print {
+  .print-actions { display: none !important; }
+  main { max-width: none; margin: 0; padding: 0; }
+  body { background: #fff; }
+  .data-table, .report-check { box-shadow: none; border-radius: 0; }
+  .data-table thead th { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .print-footer { position: fixed; bottom: 0; left: 0; right: 0; margin: 0; }
+  @page { margin: 1.5cm; }
+}

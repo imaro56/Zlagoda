@@ -5,6 +5,7 @@
 
 {% if user.empl_role == 'manager' %}
 <a class="button-link" href="/store_products/new">New store product</a>
+<a class="button-link" href="/store_products/print?sort={{ sort }}">Print</a>
 {% endif %}
 
 <form class="toolbar" method="get" action="/store_products/">

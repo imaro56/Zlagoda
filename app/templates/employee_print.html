@@ -1,0 +1,18 @@
+{% extends "print_base.html" %}
+{% block title %}Employees{% endblock %}
+{% block report_title %}Employees report{% endblock %}
+{% block report_body %}
+{% set readonly = True %}
+<table class="data-table">
+    <thead>
+        <tr><th>ID</th><th>Surname</th><th>Name</th><th>Role</th></tr>
+    </thead>
+    <tbody>
+        {% for employee in employees %}
+        {% include "_employee_row.html" %}
+        {% else %}
+        <tr><td colspan="4">No employees.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

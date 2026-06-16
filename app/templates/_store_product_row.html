@@ -5,9 +5,14 @@
     <td>{{ store_product.products_number }}</td>
     <td>{{ "Yes" if store_product.promotional_product else "No" }}</td>
     <td>{{ store_product.upc_prom or "—" }}</td>
+    {% if not readonly %}
     <td>
         {% if user.empl_role == 'manager' %}
         <a href="/store_products/{{ store_product.upc }}/edit">Edit</a>
+        <a href="/store_products/{{ store_product.upc }}/reprice">Reprice</a>
+        {% if not store_product.promotional_product %}
+        <a href="/store_products/{{ store_product.upc }}/promote">Make promo</a>
+        {% endif %}
         <button type="button"
             hx-delete="/store_products/{{ store_product.upc }}"
             hx-confirm="Delete store product {{ store_product.upc }}?"
@@ -16,4 +21,5 @@
         {% endif %}
         {% if error %}<span class="error">{{ error }}</span>{% endif %}
     </td>
+    {% endif %}
 </tr>

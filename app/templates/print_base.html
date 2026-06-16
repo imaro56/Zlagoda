@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Report{% endblock %} — Zlagoda</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <main class="container">
+        <div class="print-actions">
+            <a class="button-link" href="{{ back_url }}">Back</a>
+            <button type="button" onclick="window.print()">Print</button>
+        </div>
+
+        <header class="print-header">
+            <h1>{% block report_title %}Report{% endblock %}</h1>
+            <p class="print-meta">Zlagoda supermarket · generated {{ generated_at.strftime("%Y-%m-%d %H:%M") }}</p>
+        </header>
+
+        {% block report_body %}{% endblock %}
+
+        <footer class="print-footer">Zlagoda — internal report</footer>
+    </main>
+</body>
+</html>

@@ -3,6 +3,7 @@
     <td>{{ employee.empl_surname }}</td>
     <td>{{ employee.empl_name }}</td>
     <td>{{ employee.empl_role }}</td>
+    {% if not readonly %}
     <td>
         <a href="/employees/{{ employee.id_employee }}">Details</a>
         <a href="/employees/{{ employee.id_employee }}/edit">Edit</a>
@@ -15,4 +16,5 @@
         {% endif %}
         <span class="error" id="err-{{ employee.id_employee }}"></span>
     </td>
+    {% endif %}
 </tr>

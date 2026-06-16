@@ -5,6 +5,7 @@
     <td>{{ customer_card.phone_number }}</td>
     <td>{{ customer_card.city or "—" }}</td>
     <td>{{ customer_card.percent }}</td>
+    {% if not readonly %}
     <td>
         <a href="/customer_cards/{{ customer_card.card_number }}/edit">Edit</a>
         {% if user.empl_role == 'manager' %}
@@ -16,4 +17,5 @@
         {% endif %}
         {% if error %}<span class="error">{{ error }}</span>{% endif %}
     </td>
+    {% endif %}
 </tr>

@@ -4,6 +4,9 @@
 <h1>Customer cards</h1>
 
 <a class="button-link" href="/customer_cards/new">New customer card</a>
+{% if user.empl_role == 'manager' %}
+<a class="button-link" href="/customer_cards/print">Print</a>
+{% endif %}
 
 <table class="data-table">
     <thead>

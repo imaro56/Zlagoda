@@ -22,6 +22,7 @@
 <div id="results">
     {% if qty is not none %}
     <p class="check-totals"><strong>Sold: {{ qty }} units</strong></p>
+    <a class="button-link" href="/checks/reports/product/print?id_product={{ id_product }}&date_from={{ date_from or '' }}&date_to={{ date_to or '' }}">Print</a>
     {% else %}
     <p>Select a product to see how many were sold.</p>
     {% endif %}

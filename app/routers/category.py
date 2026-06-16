@@ -5,6 +5,7 @@ from psycopg.errors import ForeignKeyViolation
 from app.dependencies import CurrentUser, ManagerOnly, get_current_user, get_db
 from app.queries import category
 from app.templating import templates
+from datetime import datetime
 
 router = APIRouter(prefix="/categories", tags=["categories"], dependencies=[Depends(get_current_user)])
 
@@ -69,3 +70,15 @@ def delete_category(request: Request, user: ManagerOnly, category_number: int, c
     if deleted is None:
         raise HTTPException(status_code=404, detail="Category not found")
     return Response(status_code=200)
+
+
+@router.get("/print", response_class=HTMLResponse)
+def categories_print(request: Request, user: ManagerOnly, cur=Depends(get_db)):
+    categories = category.get_all_categories(cur)
+    return templates.TemplateResponse(
+        request=request,
+        name="category_print.html",
+        context={"categories": categories, "user": user,
+                 "generated_at": datetime.now(), "back_url": "/categories"},
+    )
+    

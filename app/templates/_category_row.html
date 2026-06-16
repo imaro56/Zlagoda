@@ -1,6 +1,7 @@
 <tr id="category-{{ category.category_number }}">
     <td>{{ category.category_number }}</td>
     <td>{{ category.category_name }}</td>
+    {% if not readonly %}
     <td>
         {% if user.empl_role == 'manager' %}
         <a href="/categories/{{ category.category_number }}/edit">Edit</a>
@@ -12,4 +13,5 @@
         {% endif %}
         {% if error %}<span class="error">{{ error }}</span>{% endif %}
     </td>
+    {% endif %}
 </tr>

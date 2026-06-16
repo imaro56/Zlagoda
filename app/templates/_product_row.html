@@ -3,6 +3,7 @@
     <td>{{ product.product_name }}</td>
     <td>{{ product.category_name }}</td>
     <td>{{ product.characteristics }}</td>
+    {% if not readonly %}
     <td>
         {% if user.empl_role == 'manager' %}
         <a href="/products/{{ product.id_product }}/edit">Edit</a>
@@ -14,4 +15,5 @@
         {% endif %}
         {% if error %}<span class="error">{{ error }}</span>{% endif %}
     </td>
+    {% endif %}
 </tr>
