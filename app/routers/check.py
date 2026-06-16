@@ -106,6 +106,8 @@ def check_detail_page(request: Request, user: CurrentUser, check_number: str, cu
     check_data = check.get_check_with_items(cur, check_number)
     if check_data is None:
         raise HTTPException(status_code=404, detail="Check not found")
+    if user["empl_role"] != "manager" and check_data["id_employee"] != user["id_employee"]:
+        raise HTTPException(status_code=403, detail="You can only view your own checks")
     return templates.TemplateResponse(
         request=request,
         name="check_detail.html",
@@ -115,12 +117,15 @@ def check_detail_page(request: Request, user: CurrentUser, check_number: str, cu
 
 @router.post("/", response_class=Response)
 def create_check(user: CashierOnly, upc: list[str] = Form([]), product_number: list[int] = Form([]), card_number: str = Form(""), conn=Depends(get_conn)):
+    sales = [SaleCreate(UPC=u, product_number=n) for u, n in zip(upc, product_number) if n > 0]
+    if not sales:
+        return HTMLResponse('<p class="error">Add at least one product before creating a sale.</p>', status_code=422)
     try:
-        data = CheckCreate(sales=[SaleCreate(UPC=u, product_number=n) for u, n in zip(upc, product_number) if n > 0], card_number=card_number or None)
-        check_number = check.create_check(conn, user["id_employee"], data)
-        return Response(status_code=200, headers={"HX-Redirect": f"/checks/{check_number}"})
-    except ValidationError as e:
-        raise HTTPException(status_code=422, detail="Not valid")
+        data = CheckCreate(sales=sales, card_number=card_number or None)
+    except ValidationError:
+        return HTMLResponse('<p class="error">Invalid sale data.</p>', status_code=422)
+    check_number = check.create_check(conn, user["id_employee"], data)
+    return Response(status_code=200, headers={"HX-Redirect": f"/checks/{check_number}"})
 
 
 @router.delete("/{check_number}", response_class=Response)

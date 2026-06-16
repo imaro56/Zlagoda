@@ -18,16 +18,18 @@
     <button type="submit">Apply</button>
 </form>
 
+<div class="table-scroll">
 <table class="data-table">
     <thead>
-        <tr><th>UPC</th><th>Product</th><th>Price</th><th>Qty</th><th>Promo</th><th>Promo UPC</th><th></th></tr>
+        <tr><th>UPC</th><th>Product</th><th>Category</th><th>Price</th><th>Qty</th><th>Promo</th><th>Promo UPC</th><th></th></tr>
     </thead>
     <tbody>
         {% for store_product in store_products %}
         {% include "_store_product_row.html" %}
         {% else %}
-        <tr><td colspan="7">No store products.</td></tr>
+        <tr><td colspan="8">No store products.</td></tr>
         {% endfor %}
     </tbody>
 </table>
+</div>
 {% endblock %}

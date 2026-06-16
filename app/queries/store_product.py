@@ -14,6 +14,7 @@ def get_all_store_products(cur, sort="quantity"):
         f"""
         SELECT * FROM store_product
         JOIN product USING (id_product)
+        JOIN category USING (category_number)
         ORDER BY {order_by}
         """)
     return cur.fetchall()

@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block title %}Error {{ code }}{% endblock %}
+{% block content %}
+<h1>Error {{ code }}</h1>
+<p class="error">{{ detail }}</p>
+<a class="button-link" href="/categories/">Go to start</a>
+{% endblock %}

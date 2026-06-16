@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Reprice store product{% endblock %}
+{% block content %}
+<h1>Reprice «{{ store_product.product_name }}»</h1>
+<p>Sets the new regular price for all stock of this product. Promotional rows are repriced to the new price * 0.8 automatically.</p>
+<form hx-post="/store_products/{{ store_product.upc }}/reprice">
+    <label>New price
+        <input type="number" name="new_price" required min="0" step="0.01" value="{{ store_product.selling_price }}">
+    </label>
+    <button type="submit">Reprice</button>
+    <a href="/store_products">Cancel</a>
+</form>
+{% endblock %}

@@ -11,10 +11,8 @@
             {% endfor %}
         </select>
     </label>
-    <label>Price <input type="number" name="selling_price" required min="0" step="0.01" value="{{ store_product.selling_price }}"></label>
     <label>Quantity <input type="number" name="products_number" required min="0" value="{{ store_product.products_number }}"></label>
-    <label>Promo UPC <input type="text" name="upc_prom" maxlength="12" value="{{ store_product.upc_prom or '' }}"></label>
-    <label>Promotional <input type="checkbox" name="promotional_product" value="true" {% if store_product.promotional_product %}checked{% endif %}></label>
+    <p>Price ({{ "%.2f"|format(store_product.selling_price) }}) is changed via <a href="/store_products/{{ store_product.upc }}/reprice">Reprice</a>.</p>
     <button type="submit">Save</button>
     <a href="/store_products">Cancel</a>
 </form>

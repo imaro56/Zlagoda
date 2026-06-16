@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Make promotional{% endblock %}
+{% block content %}
+<h1>Make «{{ store_product.product_name }}» promotional</h1>
+<p>Regular UPC {{ store_product.upc }}  price {{ "%.2f"|format(store_product.selling_price) }} → promo price {{ "%.2f"|format(store_product.selling_price * 8 / 10) }} (× 0.8). A product can have only one promotional row.</p>
+<form hx-post="/store_products/{{ store_product.upc }}/promote">
+    <label>Promotional UPC
+        <input type="text" name="upc_prom" required maxlength="12">
+    </label>
+    <label>Quantity for the promotional row
+        <input type="number" name="products_number" required min="0">
+    </label>
+    <button type="submit">Create promo</button>
+    <a href="/store_products">Cancel</a>
+</form>
+{% endblock %}

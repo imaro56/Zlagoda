@@ -20,7 +20,11 @@
       {% if user.empl_role == 'manager' %}
       <a class="button-link" href="/employees/{{ employee.id_employee }}/edit">Edit</a>
       {% endif %}
+      {% if user.empl_role == 'manager' %}
       <a class="button-link" href="/employees">Back to list</a>
+      {% else %}
+      <a class="button-link" href="/checks/sale">Back</a>
+      {% endif %}
       {% if user.empl_role == 'manager' %}
       <button hx-delete="/employees/{{ employee.id_employee }}"
         hx-confirm="Delete this employee?"
