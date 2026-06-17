@@ -57,8 +57,9 @@ def delete_store_product(cur, upc):
 def get_store_product_full(cur, upc):
     cur.execute(
         """
-        SELECT store_product.*, product_name, characteristics FROM store_product
+        SELECT store_product.*, product_name, characteristics, category_name FROM store_product
         JOIN product USING (id_product)
+        JOIN category USING (category_number)
         WHERE UPC = %s
         """,
         (upc,))
@@ -71,6 +72,7 @@ def get_promotional_store_products(cur, sort="quantity"):
         f"""
         SELECT * FROM store_product
         JOIN product USING (id_product)
+        JOIN category USING (category_number)
         WHERE promotional_product = TRUE
         ORDER BY {order_by}
         """)
@@ -83,6 +85,7 @@ def get_non_promotional_store_products(cur, sort="quantity"):
         f"""
         SELECT * FROM store_product
         JOIN product USING (id_product)
+        JOIN category USING (category_number)
         WHERE promotional_product = FALSE
         ORDER BY {order_by}
         """)

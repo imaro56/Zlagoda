@@ -8,6 +8,22 @@
 <a class="button-link" href="/products/print">Print</a>
 {% endif %}
 
+<form class="toolbar" method="get" action="/products/">
+    <label>Name
+        <input type="text" name="name" value="{{ name }}" placeholder="Search by name">
+    </label>
+    <label>Category
+        <select name="category_number">
+            <option value="">All categories</option>
+            {% for category in categories %}
+            <option value="{{ category.category_number }}" {% if category_number == category.category_number %}selected{% endif %}>{{ category.category_name }}</option>
+            {% endfor %}
+        </select>
+    </label>
+    <button type="submit">Apply</button>
+    {% if name or category_number %}<a class="button-link" href="/products/">Clear</a>{% endif %}
+</form>
+
 <table class="data-table">
     <thead>
         <tr><th>ID</th><th>Name</th><th>Category</th><th>Characteristics</th><th></th></tr>

@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, Form, HTTPException, Request, Response
 from fastapi.responses import HTMLResponse
 from psycopg.errors import ForeignKeyViolation
 
-from app.dependencies import CurrentUser, ManagerOnly, get_current_user, get_db
+from app.dependencies import CurrentUser, ManagerOnly, OptInt, get_current_user, get_db
 from app.queries import customer_card
 from app.templating import templates
 
@@ -14,12 +14,18 @@ router = APIRouter(prefix="/customer_cards", tags=["customer_cards"], dependenci
 
 
 @router.get("/", response_class=HTMLResponse)
-def customer_cards_page(request: Request, user: CurrentUser, cur=Depends(get_db)):
-    customer_cards = customer_card.get_all_cards(cur)
+def customer_cards_page(request: Request, user: CurrentUser, surname: str = "", percent: OptInt = None, cur=Depends(get_db)):
+    if surname.strip():
+        customer_cards = customer_card.get_cards_by_surname(cur, surname.strip())
+    elif percent is not None:
+        customer_cards = customer_card.get_cards_by_percent(cur, percent)
+    else:
+        customer_cards = customer_card.get_all_cards(cur)
     return templates.TemplateResponse(
         request=request,
         name="customer_card_list.html",
-        context={"customer_cards": customer_cards, "user": user}
+        context={"customer_cards": customer_cards, "user": user,
+                 "surname": surname, "percent": percent}
     )
 
 

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Form, HTTPException, Request, Response
 from fastapi.responses import HTMLResponse
-from psycopg.errors import ForeignKeyViolation
+from psycopg.errors import ForeignKeyViolation, UniqueViolation
 
 from app.dependencies import CurrentUser, ManagerOnly, get_current_user, get_db
 from app.queries import store_product, product
@@ -15,14 +15,23 @@ router = APIRouter(prefix="/store_products", tags=["store_products"], dependenci
 
 
 @router.get("/", response_class=HTMLResponse)
-def store_products_page(request: Request, user: CurrentUser, sort: str = "quantity", cur=Depends(get_db)):
+def store_products_page(request: Request, user: CurrentUser, sort: str = "quantity", promo: str = "all", upc: str = "", cur=Depends(get_db)):
     if sort not in ("quantity", "name"):
         sort = "quantity"
-    store_products = store_product.get_all_store_products(cur, sort)
+    if upc.strip():
+        found = store_product.get_store_product_full(cur, upc.strip())
+        store_products = [found] if found else []
+    elif promo == "yes":
+        store_products = store_product.get_promotional_store_products(cur, sort)
+    elif promo == "no":
+        store_products = store_product.get_non_promotional_store_products(cur, sort)
+    else:
+        store_products = store_product.get_all_store_products(cur, sort)
     return templates.TemplateResponse(
         request=request,
         name="store_products.html",
-        context={"store_products": store_products, "user": user, "sort": sort},
+        context={"store_products": store_products, "user": user, "sort": sort,
+                 "promo": promo, "upc": upc},
     )
 
 
@@ -38,13 +47,17 @@ def store_product_new_page(request: Request, user: ManagerOnly, cur=Depends(get_
 
 @router.post("/", response_class=Response)
 def create_store_product(user: ManagerOnly, form: Annotated[StoreProductCreate, Form()], cur=Depends(get_db)):
-    store_product.create_store_product(cur, form.upc, {
-        "UPC_prom": None,
-        "id_product": form.id_product,
-        "selling_price": form.selling_price,
-        "products_number": form.products_number,
-        "promotional_product": False,
-    })
+    try: 
+        store_product.create_store_product(cur, form.upc, {
+            "UPC_prom": None,
+            "id_product": form.id_product,
+            "selling_price": form.selling_price,
+            "products_number": form.products_number,
+            "promotional_product": False,
+        })
+    except UniqueViolation:
+        cur.connection.rollback()
+        return HTMLResponse('<p class="error">This product already has a regular store entry</p>', status_code=422)
     return Response(status_code=200, headers={"HX-Redirect": "/store_products"})
 
 

@@ -15,7 +15,18 @@
             <option value="name" {% if sort == 'name' %}selected{% endif %}>By name</option>
         </select>
     </label>
+    <label>Promo
+        <select name="promo">
+            <option value="all" {% if promo == 'all' %}selected{% endif %}>All</option>
+            <option value="yes" {% if promo == 'yes' %}selected{% endif %}>Promo only</option>
+            <option value="no" {% if promo == 'no' %}selected{% endif %}>Non-promo only</option>
+        </select>
+    </label>
+    <label>UPC
+        <input type="text" name="upc" value="{{ upc }}" placeholder="Lookup by UPC">
+    </label>
     <button type="submit">Apply</button>
+    {% if promo != 'all' or upc %}<a class="button-link" href="/store_products/">Clear</a>{% endif %}
 </form>
 
 <div class="table-scroll">

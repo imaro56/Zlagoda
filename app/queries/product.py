@@ -11,7 +11,8 @@ def get_product(cur, id_product):
 def get_all_products(cur):
     cur.execute(
         """
-        SELECT * FROM product 
+        SELECT product.*, category_name FROM product
+        JOIN category USING (category_number)
         ORDER BY product_name
         """
     )
@@ -20,7 +21,8 @@ def get_all_products(cur):
 def get_products_by_category(cur, category_number):
     cur.execute(
         """
-        SELECT * FROM product
+        SELECT product.*, category_name FROM product
+        JOIN category USING (category_number)
         WHERE category_number=%s
         ORDER BY product_name
         """,
@@ -31,7 +33,8 @@ def get_products_by_category(cur, category_number):
 def get_products_by_name(cur, product_name):
     cur.execute(
         """
-        SELECT * FROM product
+        SELECT product.*, category_name FROM product
+        JOIN category USING (category_number)
         WHERE product_name ILIKE %s
         ORDER BY product_name
         """,

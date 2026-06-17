@@ -19,6 +19,10 @@ CREATE TABLE store_product (
     promotional_product BOOLEAN NOT NULL
 );
 
+CREATE UNIQUE INDEX unique_regular_store_product_per_product
+      ON store_product (id_product)
+      WHERE promotional_product = FALSE;
+
 CREATE TABLE employee (
     login VARCHAR(50) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,

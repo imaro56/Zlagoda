@@ -8,6 +8,17 @@
 <a class="button-link" href="/customer_cards/print">Print</a>
 {% endif %}
 
+<form class="toolbar" method="get" action="/customer_cards/">
+    <label>Surname
+        <input type="text" name="surname" value="{{ surname }}" placeholder="Search by surname">
+    </label>
+    <label>Discount %
+        <input type="number" name="percent" value="{{ percent if percent is not none else '' }}" min="0" placeholder="Any">
+    </label>
+    <button type="submit">Apply</button>
+    {% if surname or percent is not none %}<a class="button-link" href="/customer_cards/">Clear</a>{% endif %}
+</form>
+
 <table class="data-table">
     <thead>
         <tr>

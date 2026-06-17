@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, Form, HTTPException, Request, Response
 from fastapi.responses import HTMLResponse
 from psycopg.errors import ForeignKeyViolation
 
-from app.dependencies import CurrentUser, ManagerOnly, get_current_user, get_db
+from app.dependencies import CurrentUser, ManagerOnly, OptInt, get_current_user, get_db
 from app.queries import product, category
 from app.templating import templates
 from datetime import datetime
@@ -14,12 +14,19 @@ router = APIRouter(prefix="/products", tags=["products"], dependencies=[Depends(
 
 
 @router.get("/", response_class=HTMLResponse)
-def products_page(request: Request, user: CurrentUser, cur=Depends(get_db)):
-    products = product.get_all_products(cur)
+def products_page(request: Request, user: CurrentUser, name: str = "", category_number: OptInt = None, cur=Depends(get_db)):
+    if name.strip():
+        products = product.get_products_by_name(cur, name.strip())
+    elif category_number is not None:
+        products = product.get_products_by_category(cur, category_number)
+    else:
+        products = product.get_all_products(cur)
+    categories = category.get_all_categories(cur)
     return templates.TemplateResponse(
         request=request,
         name="product_list.html",
-        context={"products": products, "user": user}
+        context={"products": products, "user": user, "categories": categories,
+                 "name": name, "category_number": category_number}
     )
 
 
