@@ -100,3 +100,29 @@ def get_all_cashiers(cur):
         """,
     )
     return cur.fetchall()
+
+
+def cashiers_with_only_promo_checks(cur):
+    cur.execute(
+        """
+        SELECT e.id_employee, e.empl_surname, e.empl_name
+        FROM employee AS e
+        WHERE e.empl_role = 'cashier'
+            AND EXISTS (
+                SELECT 1 FROM "check" c2
+                WHERE c2.id_employee = e.id_employee)
+            AND NOT EXISTS (
+                SELECT 1 FROM "check" AS c
+                WHERE c.id_employee = e.id_employee
+                AND NOT EXISTS (
+                    SELECT 1
+                    FROM sale AS s
+                        JOIN store_product AS sp ON sp.UPC = s.UPC
+                    WHERE s.check_number = c.check_number
+                        AND sp.promotional_product = TRUE
+                )
+            )
+        ORDER BY e.empl_surname
+        """
+    )
+    return cur.fetchall()

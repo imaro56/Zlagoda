@@ -91,6 +91,16 @@ def edit_employee(user: ManagerOnly, id_employee: str, form: Annotated[EmployeeU
     return Response(status_code=200, headers={"HX-Redirect": f"/employees/{id_employee}"})
 
 
+@router.get("/promo_only", response_class=HTMLResponse)
+def get_cashiers_promo_only(request: Request, user: ManagerOnly, cur=Depends(get_db)):
+    rows = employee.cashiers_with_only_promo_checks(cur)
+    return templates.TemplateResponse(
+        request=request,
+        name="promo_only_cashiers.html",
+        context={"rows": rows, "user": user},
+    )
+
+
 @router.get("/{id_employee}", response_class=HTMLResponse)
 def employee_page(request: Request, user: ManagerOnly, id_employee: str, cur=Depends(get_db)):
     employee_data = employee.get_employee(cur, id_employee)

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Categories by stock value{% endblock %}
+{% block content %}
+<h1>Categories by total stock value</h1>
+<form class="toolbar" method="get" action="/categories/by_value">
+    <label>Min total value
+        <input type="number" name="min_value" step="0.01" min="0" value="{{ min_value }}"></label>
+    <button type="submit">Show</button>
+</form>
+<table class="data-table">
+    <thead><tr><th>Category</th><th>Products</th><th>Units</th>
+        <th>Total value</th><th>Min price</th><th>Max price</th></tr></thead>
+    <tbody>
+        {% for r in rows %}
+        <tr><td>{{ r.category_name }}</td><td>{{ r.diff_products }}</td>
+            <td>{{ r.total_cnt }}</td><td>{{ "%.2f"|format(r.price) }}</td>
+            <td>{{ "%.2f"|format(r.min_price) }}</td><td>{{ "%.2f"|format(r.max_price) }}</td></tr>
+        {% else %}
+        <tr><td colspan="6">No categories above this value</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

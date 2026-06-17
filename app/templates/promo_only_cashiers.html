@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Cashiers — promo checks{% endblock %}
+{% block content %}
+<h1>Cashiers with promo checks</h1>
+<table class="data-table">
+    <thead><tr><th>ID</th><th>Surname</th><th>Name</th></tr></thead>
+    <tbody>
+        {% for r in rows %}
+        <tr><td>{{ r.id_employee }}</td><td>{{ r.empl_surname }}</td><td>{{ r.empl_name }}</td></tr>
+        {% else %}
+        <tr><td colspan="3">No cashiers matching the criteria</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

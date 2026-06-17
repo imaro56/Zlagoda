@@ -81,4 +81,13 @@ def categories_print(request: Request, user: ManagerOnly, cur=Depends(get_db)):
         context={"categories": categories, "user": user,
                  "generated_at": datetime.now(), "back_url": "/categories"},
     )
-    
+
+
+@router.get("/by_value", response_class=HTMLResponse)
+def category_total_value(request: Request, user: ManagerOnly, min_value: float = 0, cur=Depends(get_db)):
+    rows = category.get_category_total_values(cur, min_value)
+    return templates.TemplateResponse(
+        request=request,
+        name="category_values.html",
+        context={"rows": rows, "min_value": min_value, "user": user},
+    )

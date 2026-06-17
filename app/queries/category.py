@@ -51,3 +51,24 @@ def update_category(cur, category_number, data):
         (data['category_name'], category_number),
     )
     return cur.fetchone()
+
+def get_category_total_values(cur, min_value):
+    cur.execute(
+        """
+        SELECT ct.category_name, 
+            COUNT(sp.UPC) AS diff_products, 
+            SUM(sp.products_number) AS total_cnt,
+            SUM(sp.products_number * sp.selling_price) AS price,
+            MIN(sp.selling_price) AS min_price,
+            MAX(sp.selling_price) AS max_price
+        FROM category AS ct
+            INNER JOIN product AS p ON p.category_number = ct.category_number
+            INNER JOIN store_product AS sp ON sp.id_product = p.id_product
+    
+        GROUP BY ct.category_number, ct.category_name
+        HAVING SUM(sp.products_number * sp.selling_price) >= %s
+        ORDER BY price DESC
+        """,
+        (min_value,),
+    )
+    return cur.fetchall()
