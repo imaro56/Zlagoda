@@ -11,6 +11,12 @@
         <input type="text" name="surname" value="{{ surname }}" placeholder="Search by surname">
     </label>
     <button type="submit">Search</button>
+        <label>Role
+        <select name="role">
+            <option value="" {% if role != 'cashier' %}selected{% endif %}>All</option>
+            <option value="cashier" {% if role == 'cashier' %}selected{% endif %}>Cashiers only</option>
+        </select>
+    </label>
     {% if surname %}<a class="button-link" href="/employees/">Clear</a>{% endif %}
 </form>
 

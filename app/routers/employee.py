@@ -15,15 +15,16 @@ router = APIRouter(prefix="/employees", tags=["employees"], dependencies=[Depend
 
 
 @router.get("/", response_class=HTMLResponse)
-def employees_page(request: Request, user: ManagerOnly, surname: str = "", cur=Depends(get_db)):
+def employees_page(request: Request, user: ManagerOnly, surname: str = "", role: str = "", cur=Depends(get_db)):
     if surname.strip():
         employees = employee.get_employee_by_surname(cur, surname.strip())
+    elif role == "cashier":
+        employees = employee.get_all_cashiers(cur)
     else:
         employees = employee.get_all_employees(cur)
     return templates.TemplateResponse(
-        request=request,
-        name="employee_list.html",
-        context={"employees": employees, "user": user, "surname": surname},
+        request=request, name="employee_list.html",
+        context={"employees": employees, "user": user, "surname": surname, "role": role},
     )
 
 
