@@ -37,7 +37,12 @@
     </tbody>
 </table>
 
+{% set subtotal = check["items"] | sum(attribute="line_total") %}
 <p class="check-totals">
+    Subtotal: {{ "%.2f"|format(subtotal) }}<br>
+    {% if check.card_number and subtotal > check.sum_total %}
+    Discount ({{ check.percent }}%): -{{ "%.2f"|format(subtotal - check.sum_total) }}<br>
+    {% endif %}
     VAT: {{ "%.2f"|format(check.vat) }}<br>
     <strong>Total: {{ "%.2f"|format(check.sum_total) }}</strong>
 </p>

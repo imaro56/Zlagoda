@@ -7,7 +7,7 @@ def get_check_with_items(cur, check_number):
         """
         SELECT c.check_number, c.print_date, c.sum_total, c.vat,
                c.id_employee, e.empl_surname, e.empl_name,
-               c.card_number, cc.cust_surname
+               c.card_number, cc.cust_surname, cc.percent
         FROM "check" c
         JOIN employee e ON e.id_employee = c.id_employee
         LEFT JOIN customer_card cc ON cc.card_number = c.card_number
